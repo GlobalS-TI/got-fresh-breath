@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { logoutAction } from '@/actions/auth'
@@ -33,6 +34,12 @@ export default async function CuentaPage() {
           </div>
         )}
       </dl>
+      <Link
+        href="/cuenta/pedidos"
+        className="mb-4 inline-block font-semibold text-brand-600 hover:underline"
+      >
+        Ver mis pedidos
+      </Link>
       <form action={logoutAction}>
         <button
           type="submit"

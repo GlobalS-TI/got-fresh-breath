@@ -1,8 +1,6 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 
-// Límite de dispensadores para usuarios no-empresa / no-distribuidor.
-// Única fuente de verdad — cualquier validación de UI (ej. carrito) debe importar esto, no repetir "2".
-export const MAX_DISPENSADORES_INDIVIDUAL = 2
+export { MAX_DISPENSADORES_INDIVIDUAL } from '@/lib/constants'
 
 // Fuerza el estado inicial a 'pendiente' — nunca confiar en un estado mandado por el cliente
 const enforceInitialStatus: CollectionBeforeChangeHook = ({ data, operation }) => {

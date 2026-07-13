@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import { logoutAction } from '@/actions/auth'
 import { Logo } from '@/components/Logo'
+import { useCart } from '@/lib/cart-context'
 
 const NAV_LINKS = [
   { href: '/tienda', label: 'Tienda' },
@@ -21,6 +22,7 @@ type NavbarClientProps = {
 export function NavbarClient({ user }: NavbarClientProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
+  const { count } = useCart()
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
@@ -38,8 +40,13 @@ export function NavbarClient({ user }: NavbarClientProps) {
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          <Link href="/carrito" aria-label="Carrito" className="text-slate-600 hover:text-brand-600">
+          <Link href="/carrito" aria-label="Carrito" className="relative text-slate-600 hover:text-brand-600">
             🛒
+            {count > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-brand-600 text-[10px] font-bold text-white">
+                {count > 9 ? '9+' : count}
+              </span>
+            )}
           </Link>
 
           {user ? (
@@ -59,6 +66,13 @@ export function NavbarClient({ user }: NavbarClientProps) {
                     onClick={() => setAccountOpen(false)}
                   >
                     Mi cuenta
+                  </Link>
+                  <Link
+                    href="/cuenta/pedidos"
+                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    Mis pedidos
                   </Link>
                   <form action={logoutAction}>
                     <button
@@ -110,6 +124,9 @@ export function NavbarClient({ user }: NavbarClientProps) {
               <>
                 <Link href="/cuenta" onClick={() => setMenuOpen(false)}>
                   Mi cuenta
+                </Link>
+                <Link href="/cuenta/pedidos" onClick={() => setMenuOpen(false)}>
+                  Mis pedidos
                 </Link>
                 <form action={logoutAction}>
                   <button type="submit" className="text-left">

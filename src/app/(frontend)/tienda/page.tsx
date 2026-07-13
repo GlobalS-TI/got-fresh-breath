@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { AddToCartButtons } from '@/components/AddToCartButtons'
 import { getPayloadClient } from '@/lib/payload'
 
 export const metadata = {
@@ -49,22 +50,14 @@ export default async function TiendaPage() {
                 </Link>
                 <p className="mt-1 font-bold text-brand-700">{formatPrecio(product.precio)}</p>
                 <div className="mt-4 flex flex-col gap-2">
-                  <button
-                    type="button"
-                    disabled
-                    title="Disponible próximamente"
-                    className="cursor-not-allowed rounded-md border border-slate-300 py-2 text-sm text-slate-400"
-                  >
-                    Agregar al carrito
-                  </button>
-                  <button
-                    type="button"
-                    disabled
-                    title="Disponible próximamente"
-                    className="cursor-not-allowed rounded-md bg-slate-200 py-2 text-sm text-slate-400"
-                  >
-                    Compra ahora
-                  </button>
+                  <AddToCartButtons
+                    productId={product.id}
+                    slug={product.slug}
+                    nombre={product.nombre}
+                    precio={product.precio}
+                    categoria={product.categoria}
+                    imagenUrl={imagenUrl}
+                  />
                   {fichaTecnica?.url && (
                     <a
                       href={fichaTecnica.url}

@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
+import { CartProvider } from '@/lib/cart-context'
 import './styles.css'
 
 export const metadata = {
@@ -15,9 +16,11 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="es">
       <body className="text-slate-900">
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <CartProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   )

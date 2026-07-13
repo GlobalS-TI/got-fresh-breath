@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 
+import { AddToCartButtons } from '@/components/AddToCartButtons'
 import { getPayloadClient } from '@/lib/payload'
 
 function formatPrecio(precio: number) {
@@ -22,6 +23,8 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
 
   const imagenes = product.imagenes ?? []
   const fichaTecnica = typeof product.fichaTecnica === 'object' ? product.fichaTecnica : null
+  const primeraImagen = imagenes[0]?.imagen
+  const imagenUrl = typeof primeraImagen === 'object' ? primeraImagen?.url : null
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
@@ -54,44 +57,28 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
           <p className="mt-4 whitespace-pre-line text-slate-700">{product.descripcion}</p>
           <p className="mt-6 text-2xl font-bold text-brand-700">{formatPrecio(product.precio)}</p>
 
-          <label className="mt-6 flex flex-col gap-1 text-sm font-medium text-slate-700">
-            Cantidad
-            <select
-              disabled
-              className="w-32 cursor-not-allowed rounded-md border border-slate-300 px-3 py-2 text-slate-400"
-            >
-              <option>Elige cantidad</option>
-            </select>
-          </label>
-
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-            <button
-              type="button"
-              disabled
-              title="Disponible próximamente"
-              className="cursor-not-allowed rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-400"
-            >
-              Agregar al carrito
-            </button>
-            <button
-              type="button"
-              disabled
-              title="Disponible próximamente"
-              className="cursor-not-allowed rounded-md bg-slate-200 px-4 py-2 text-sm text-slate-400"
-            >
-              Compra ahora
-            </button>
-            {fichaTecnica?.url && (
-              <a
-                href={fichaTecnica.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md bg-slate-900 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-slate-700"
-              >
-                Ficha Técnica
-              </a>
-            )}
+          <div className="mt-6">
+            <AddToCartButtons
+              productId={product.id}
+              slug={product.slug}
+              nombre={product.nombre}
+              precio={product.precio}
+              categoria={product.categoria}
+              imagenUrl={imagenUrl}
+              showQuantity
+            />
           </div>
+
+          {fichaTecnica?.url && (
+            <a
+              href={fichaTecnica.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block rounded-md bg-slate-900 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-slate-700"
+            >
+              Ficha Técnica
+            </a>
+          )}
         </div>
       </div>
     </div>
