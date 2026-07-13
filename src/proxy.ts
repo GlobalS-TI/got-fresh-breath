@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 // La validación real de la sesión (firma/expiración del JWT) ocurre en cada página
 // protegida vía getSession() — este middleware solo evita el viaje redondo para el
 // caso obvio de "no hay cookie".
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const hasSession = request.cookies.has('payload-token')
 
   if (!hasSession) {
