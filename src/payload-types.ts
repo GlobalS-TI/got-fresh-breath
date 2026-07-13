@@ -69,6 +69,10 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    products: Product;
+    orders: Order;
+    clients: Client;
+    leads: Lead;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,13 +82,17 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    clients: ClientsSelect<false> | ClientsSelect<true>;
+    leads: LeadsSelect<false> | LeadsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {};
@@ -122,7 +130,11 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  nombre: string;
+  apellido: string;
+  rol: 'admin' | 'empresa' | 'distribuidor' | 'individual';
+  empresa?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -147,8 +159,8 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
-  alt: string;
+  id: number;
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -160,13 +172,127 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    feature?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  nombre: string;
+  /**
+   * URL del producto, ej: dispensador-slim-nickel
+   */
+  slug: string;
+  descripcion: string;
+  descripcionCorta?: string | null;
+  precio: number;
+  categoria: 'dispensador' | 'consumible';
+  imagenes?:
+    | {
+        imagen: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  fichaTecnica?: (number | null) | Media;
+  stock?: number | null;
+  activo?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  usuario?: (number | null) | User;
+  guestEmail?: string | null;
+  items: {
+    producto: number | Product;
+    cantidad: number;
+    precioUnitario: number;
+    id?: string | null;
+  }[];
+  total: number;
+  estado: 'pendiente' | 'pagado' | 'en_proceso' | 'enviado' | 'entregado' | 'cancelado';
+  metodoPago?: ('paypal' | 'transferencia' | 'cotizacion') | null;
+  paypalOrderId?: string | null;
+  direccionEnvio?: {
+    calle?: string | null;
+    ciudad?: string | null;
+    estado?: string | null;
+    cp?: string | null;
+  };
+  notas?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients".
+ */
+export interface Client {
+  id: number;
+  nombre: string;
+  logo: number | Media;
+  activo?: boolean | null;
+  orden?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads".
+ */
+export interface Lead {
+  id: number;
+  nombre: string;
+  email: string;
+  telefono?: string | null;
+  tipo: 'sectores' | 'distribuidor' | 'contacto' | 'comodato';
+  sector?: ('hoteles' | 'restaurantes' | 'corporativos' | 'salud' | 'comercial' | 'hogar') | null;
+  colaboradores?: ('menos_100' | '100_500' | 'mas_500') | null;
+  interaccion?: ('alta' | 'moderada' | 'baja') | null;
+  experienciaB2B?: ('sector' | 'otros_sectores' | 'diversificar') | null;
+  penetracionMercado?: ('alta' | 'moderada') | null;
+  notas?: string | null;
+  procesado?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -183,20 +309,36 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'clients';
+        value: number | Client;
+      } | null)
+    | ({
+        relationTo: 'leads';
+        value: number | Lead;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -206,10 +348,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -229,7 +371,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -240,6 +382,10 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  nombre?: T;
+  apellido?: T;
+  rol?: T;
+  empresa?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +420,125 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        feature?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  nombre?: T;
+  slug?: T;
+  descripcion?: T;
+  descripcionCorta?: T;
+  precio?: T;
+  categoria?: T;
+  imagenes?:
+    | T
+    | {
+        imagen?: T;
+        id?: T;
+      };
+  fichaTecnica?: T;
+  stock?: T;
+  activo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  usuario?: T;
+  guestEmail?: T;
+  items?:
+    | T
+    | {
+        producto?: T;
+        cantidad?: T;
+        precioUnitario?: T;
+        id?: T;
+      };
+  total?: T;
+  estado?: T;
+  metodoPago?: T;
+  paypalOrderId?: T;
+  direccionEnvio?:
+    | T
+    | {
+        calle?: T;
+        ciudad?: T;
+        estado?: T;
+        cp?: T;
+      };
+  notas?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients_select".
+ */
+export interface ClientsSelect<T extends boolean = true> {
+  nombre?: T;
+  logo?: T;
+  activo?: T;
+  orden?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  nombre?: T;
+  email?: T;
+  telefono?: T;
+  tipo?: T;
+  sector?: T;
+  colaboradores?: T;
+  interaccion?: T;
+  experienciaB2B?: T;
+  penetracionMercado?: T;
+  notas?: T;
+  procesado?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
