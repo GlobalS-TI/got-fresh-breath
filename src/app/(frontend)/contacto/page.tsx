@@ -21,9 +21,17 @@ export default function ContactoPage() {
           <p className="text-slate-700">Lunes a Viernes – 8:30 am a 5:30 pm</p>
           <p className="mb-6 text-slate-700">Torreón 514, Chapultepec, 66450, San Nicolás de los Garza, N.L.</p>
 
-          <div className="flex h-40 items-center justify-center rounded bg-slate-100 text-sm text-slate-400">
-            Mapa — pendiente URL de Google Maps
-          </div>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1153.165092566478!2d-100.3004995191647!3d25.74199834960554!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x866294f46c195555%3A0xa618b547fb6d70b3!2sThunder%20Led%20Lights%20Mexico!5e0!3m2!1ses!2smx!4v1783967419468!5m2!1ses!2smx"
+            width="100%"
+            height="300"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Ubicación Got Fresh Breath"
+            className="rounded"
+          />
         </div>
 
         <div>

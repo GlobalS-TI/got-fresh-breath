@@ -1,4 +1,48 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionAfterChangeHook, CollectionConfig } from 'payload'
+
+import { notifyCrm } from '@/lib/crm-webhook'
+import { escapeHtml, NOTIFICATION_EMAIL, sendEmail } from '@/lib/email'
+
+const TIPO_LABELS: Record<string, string> = {
+  sectores: 'Formulario de Sectores',
+  distribuidor: 'Formulario de Distribuidor',
+  contacto: 'Formulario de Contacto',
+  comodato: 'Comodato (Hero)',
+}
+
+const notifyNewLead: CollectionAfterChangeHook = async ({ doc, operation }) => {
+  if (operation !== 'create') return doc
+
+  const tipoLabel = TIPO_LABELS[doc.tipo] ?? doc.tipo
+
+  await sendEmail({
+    to: NOTIFICATION_EMAIL,
+    // El subject no admite HTML, pero igual se sanea por consistencia y para evitar inyección de headers.
+    subject: `Nuevo lead: ${tipoLabel} — ${escapeHtml(doc.nombre)}`,
+    html: `
+      <h2>Nuevo lead recibido</h2>
+      <p><strong>Nombre:</strong> ${escapeHtml(doc.nombre)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(doc.email)}</p>
+      <p><strong>Teléfono:</strong> ${escapeHtml(doc.telefono) || '—'}</p>
+      <p><strong>Origen:</strong> ${escapeHtml(tipoLabel)}</p>
+      ${doc.sector ? `<p><strong>Sector:</strong> ${escapeHtml(doc.sector)}</p>` : ''}
+      ${doc.notas ? `<p><strong>Notas:</strong> ${escapeHtml(doc.notas)}</p>` : ''}
+    `,
+  })
+
+  await notifyCrm({
+    id: doc.id,
+    nombre: doc.nombre,
+    email: doc.email,
+    telefono: doc.telefono,
+    tipo: doc.tipo,
+    sector: doc.sector,
+    notas: doc.notas,
+    createdAt: doc.createdAt,
+  })
+
+  return doc
+}
 
 export const Leads: CollectionConfig = {
   slug: 'leads',
@@ -6,6 +50,9 @@ export const Leads: CollectionConfig = {
     useAsTitle: 'nombre',
     defaultColumns: ['nombre', 'email', 'tipo', 'sector', 'createdAt'],
     group: 'CRM',
+  },
+  hooks: {
+    afterChange: [notifyNewLead],
   },
   fields: [
     { name: 'nombre', type: 'text', required: true },

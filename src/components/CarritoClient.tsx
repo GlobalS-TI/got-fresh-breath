@@ -1,14 +1,17 @@
 'use client'
 
+import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 
 import { checkoutAction, type CheckoutState } from '@/actions/checkout'
+import { capturePaypalOrderAction, createPaypalOrderAction } from '@/actions/paypal'
 import { useCart } from '@/lib/cart-context'
 import { MAX_DISPENSADORES_INDIVIDUAL } from '@/lib/constants'
 
 const initialState: CheckoutState = {}
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
 
 function formatPrecio(precio: number) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(precio)
@@ -21,6 +24,9 @@ type CarritoClientProps = {
 export function CarritoClient({ user }: CarritoClientProps) {
   const { items, updateCantidad, removeItem, clear, total } = useCart()
   const [state, formAction, pending] = useActionState(checkoutAction, initialState)
+  const [paypalError, setPaypalError] = useState('')
+  const [guestEmail, setGuestEmail] = useState('')
+  const [direccion, setDireccion] = useState({ calle: '', ciudad: '', estadoDireccion: '', cp: '' })
   const router = useRouter()
 
   const rol = user?.rol ?? 'individual'
@@ -31,11 +37,18 @@ export function CarritoClient({ user }: CarritoClientProps) {
     rol !== 'empresa' &&
     rol !== 'distribuidor' &&
     dispensadoresEnCarrito > MAX_DISPENSADORES_INDIVIDUAL
+  const faltaCorreoInvitado = !user && !guestEmail.trim()
+  const direccionIncompleta =
+    !direccion.calle.trim() ||
+    !direccion.ciudad.trim() ||
+    !direccion.estadoDireccion.trim() ||
+    !direccion.cp.trim()
 
   useEffect(() => {
     if (state.success && state.orderId) {
       clear()
-      router.push(`/pedido/${state.orderId}`)
+      const query = state.accessToken ? `?token=${state.accessToken}` : ''
+      router.push(`/pedido/${state.orderId}${query}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
@@ -117,6 +130,8 @@ export function CarritoClient({ user }: CarritoClientProps) {
               type="email"
               name="guestEmail"
               required
+              value={guestEmail}
+              onChange={(e) => setGuestEmail(e.target.value)}
               className="rounded-md border border-slate-300 px-3 py-2"
             />
           </label>
@@ -127,15 +142,31 @@ export function CarritoClient({ user }: CarritoClientProps) {
           <input
             name="calle"
             placeholder="Calle y número"
+            value={direccion.calle}
+            onChange={(e) => setDireccion((d) => ({ ...d, calle: e.target.value }))}
             className="rounded-md border border-slate-300 px-3 py-2 sm:col-span-2"
           />
-          <input name="ciudad" placeholder="Ciudad" className="rounded-md border border-slate-300 px-3 py-2" />
+          <input
+            name="ciudad"
+            placeholder="Ciudad"
+            value={direccion.ciudad}
+            onChange={(e) => setDireccion((d) => ({ ...d, ciudad: e.target.value }))}
+            className="rounded-md border border-slate-300 px-3 py-2"
+          />
           <input
             name="estadoDireccion"
             placeholder="Estado"
+            value={direccion.estadoDireccion}
+            onChange={(e) => setDireccion((d) => ({ ...d, estadoDireccion: e.target.value }))}
             className="rounded-md border border-slate-300 px-3 py-2"
           />
-          <input name="cp" placeholder="Código postal" className="rounded-md border border-slate-300 px-3 py-2" />
+          <input
+            name="cp"
+            placeholder="Código postal"
+            value={direccion.cp}
+            onChange={(e) => setDireccion((d) => ({ ...d, cp: e.target.value }))}
+            className="rounded-md border border-slate-300 px-3 py-2"
+          />
         </fieldset>
 
         <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
@@ -147,9 +178,6 @@ export function CarritoClient({ user }: CarritoClientProps) {
           >
             <option value="cotizacion">Solicitar cotización</option>
             <option value="transferencia">Transferencia bancaria</option>
-            <option value="paypal" disabled>
-              PayPal (próximamente)
-            </option>
           </select>
         </label>
 
@@ -164,6 +192,59 @@ export function CarritoClient({ user }: CarritoClientProps) {
           {pending ? 'Procesando…' : 'Confirmar pedido'}
         </button>
       </form>
+
+      <div className="mt-6 rounded-lg border border-slate-200 p-6">
+        {PAYPAL_CLIENT_ID ? (
+          <>
+            <p className="mb-3 text-center text-sm font-medium text-slate-700">O paga ahora con PayPal</p>
+            {faltaCorreoInvitado && (
+              <p className="mb-3 text-center text-sm text-slate-500">
+                Ingresa tu correo arriba para pagar como invitado.
+              </p>
+            )}
+            {direccionIncompleta && (
+              <p className="mb-3 text-center text-sm text-slate-500">
+                Completa calle, ciudad, estado y código postal arriba para pagar con PayPal.
+              </p>
+            )}
+            <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: 'MXN' }}>
+              <PayPalButtons
+                disabled={excedeLimite || faltaCorreoInvitado || direccionIncompleta}
+                forceReRender={[items, guestEmail, direccion]}
+                createOrder={async () => {
+                  setPaypalError('')
+                  const cartItems = items.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
+                  const result = await createPaypalOrderAction(cartItems)
+                  if (result.error || !result.paypalOrderId) {
+                    setPaypalError(result.error ?? 'No se pudo iniciar el pago con PayPal.')
+                    throw new Error(result.error ?? 'No se pudo iniciar el pago con PayPal.')
+                  }
+                  return result.paypalOrderId
+                }}
+                onApprove={async (data) => {
+                  const cartItems = items.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
+                  const result = await capturePaypalOrderAction({
+                    paypalOrderId: data.orderID,
+                    items: cartItems,
+                    guestEmail: user ? undefined : guestEmail,
+                    direccionEnvio: direccion,
+                  })
+                  if (result.success && result.orderId) {
+                    clear()
+                    router.push(`/pedido/${result.orderId}`)
+                  } else {
+                    setPaypalError(result.error ?? 'No se pudo confirmar tu pedido.')
+                  }
+                }}
+                onError={() => setPaypalError('Ocurrió un error con PayPal. Intenta de nuevo.')}
+              />
+            </PayPalScriptProvider>
+            {paypalError && <p className="mt-3 text-sm text-red-600">{paypalError}</p>}
+          </>
+        ) : (
+          <p className="text-center text-sm text-slate-400">PayPal (próximamente)</p>
+        )}
+      </div>
     </div>
   )
 }
