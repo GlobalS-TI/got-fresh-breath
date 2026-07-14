@@ -234,6 +234,10 @@ export interface Order {
   id: number;
   usuario?: (number | null) | User;
   guestEmail?: string | null;
+  /**
+   * Generado automáticamente — permite a un invitado ver su pedido sin cuenta.
+   */
+  accessToken?: string | null;
   items: {
     producto: number | Product;
     cantidad: number;
@@ -485,6 +489,7 @@ export interface ProductsSelect<T extends boolean = true> {
 export interface OrdersSelect<T extends boolean = true> {
   usuario?: T;
   guestEmail?: T;
+  accessToken?: T;
   items?:
     | T
     | {

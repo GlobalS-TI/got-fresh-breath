@@ -4,15 +4,22 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import { getPayloadClient } from '@/lib/payload'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export type AuthActionState = { error: string }
 
 const PASSWORD_MIN_LENGTH = 8
+const PASSWORD_MAX_LENGTH = 128
 
 export async function loginAction(
   _prevState: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  const rateLimit = await checkRateLimit('login', 5, 60_000)
+  if (!rateLimit.allowed) {
+    return { error: rateLimit.error }
+  }
+
   const email = String(formData.get('email') || '').trim()
   const password = String(formData.get('password') || '')
 
@@ -56,6 +63,11 @@ export async function registerAction(
   _prevState: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  const rateLimit = await checkRateLimit('register', 3, 60_000)
+  if (!rateLimit.allowed) {
+    return { error: rateLimit.error }
+  }
+
   const nombre = String(formData.get('nombre') || '').trim()
   const apellido = String(formData.get('apellido') || '').trim()
   const email = String(formData.get('email') || '').trim()
@@ -72,6 +84,9 @@ export async function registerAction(
   }
   if (password.length < PASSWORD_MIN_LENGTH) {
     return { error: `La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.` }
+  }
+  if (password.length > PASSWORD_MAX_LENGTH) {
+    return { error: `La contraseña no puede tener más de ${PASSWORD_MAX_LENGTH} caracteres.` }
   }
   if (rol === 'empresa' && !empresa) {
     return { error: 'El nombre de la empresa es requerido.' }

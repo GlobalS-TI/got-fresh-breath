@@ -1,6 +1,7 @@
 'use server'
 
 import { getPayloadClient } from '@/lib/payload'
+import { checkRateLimit } from '@/lib/rate-limit'
 import type { Lead } from '@/payload-types'
 
 export type LeadActionState = { error: string; success: boolean }
@@ -16,6 +17,11 @@ export async function submitLeadAction(
   _prevState: LeadActionState,
   formData: FormData,
 ): Promise<LeadActionState> {
+  const rateLimit = await checkRateLimit('leads', 5, 60_000)
+  if (!rateLimit.allowed) {
+    return { error: rateLimit.error, success: false }
+  }
+
   const nombre = String(formData.get('nombre') || '').trim()
   const email = String(formData.get('email') || '').trim()
   const tipo = String(formData.get('tipo') || '') as Lead['tipo']

@@ -23,8 +23,15 @@ function formatPrecio(precio: number) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(precio)
 }
 
-export default async function PedidoPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PedidoPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ token?: string }>
+}) {
   const { id } = await params
+  const { token } = await searchParams
   const orderId = Number(id)
   if (!Number.isFinite(orderId)) {
     notFound()
@@ -39,10 +46,17 @@ export default async function PedidoPage({ params }: { params: Promise<{ id: str
   }
 
   const ownerId = typeof order.usuario === 'object' ? order.usuario?.id : order.usuario
-  // Los pedidos de invitado (sin usuario) son visibles vía el link directo, igual que una
-  // confirmación de compra tradicional. Los pedidos con cuenta requieren ser el dueño o admin.
+  // Los pedidos de invitado (sin usuario) requieren el token opaco de la URL — el ID secuencial
+  // por sí solo NO alcanza para verlos, así que no se pueden enumerar probando IDs consecutivos.
+  // Los pedidos con cuenta requieren ser el dueño o admin.
+  //
+  // `ownerId` es `undefined` (no `null`) cuando el pedido es de invitado, porque Payload omite la
+  // clave `usuario` del todo si la relación está vacía. Sin `ownerId != null`, un visitante sin
+  // sesión (`user?.id` también `undefined`) pasaría la comparación `undefined === undefined`.
   const esInvitado = !ownerId
-  const puedeVer = esInvitado || user?.rol === 'admin' || user?.id === ownerId
+  const tokenValido = esInvitado && Boolean(token) && token === order.accessToken
+  const esDueño = ownerId != null && user?.id === ownerId
+  const puedeVer = tokenValido || user?.rol === 'admin' || esDueño
   if (!puedeVer) {
     notFound()
   }

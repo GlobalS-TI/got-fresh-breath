@@ -15,6 +15,11 @@ import { Leads } from './collections/Leads'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// El frontend y el admin panel viven en el mismo origen (un solo Next.js app) — no hay necesidad
+// de exponer la API REST/GraphQL a otros orígenes. Restringido para reducir superficie de ataque
+// (ej. otro sitio haciendo requests autenticadas usando la cookie payload-token del navegador).
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -24,6 +29,8 @@ export default buildConfig({
   },
   collections: [Users, Media, Products, Orders, Clients, Leads],
   editor: lexicalEditor(),
+  cors: [SERVER_URL],
+  csrf: [SERVER_URL],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
