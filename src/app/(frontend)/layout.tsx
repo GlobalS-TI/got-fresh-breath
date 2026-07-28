@@ -18,7 +18,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       <body className="text-slate-900">
         <CartProvider>
           <Navbar />
-          <main>{children}</main>
+          {/* pt-16 compensa el nav (fixed, fuera del flujo) — el Hero de home la cancela con -mt-16
+              para que su fondo llegue hasta arriba, detrás del nav transparente. */}
+          <main className="pt-16">{children}</main>
           <Footer />
         </CartProvider>
       </body>
