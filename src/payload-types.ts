@@ -281,7 +281,7 @@ export interface Lead {
   email: string;
   telefono?: string | null;
   tipo: 'sectores' | 'distribuidor' | 'contacto' | 'comodato';
-  sector?: ('hoteles' | 'restaurantes' | 'corporativos' | 'salud' | 'comercial' | 'hogar') | null;
+  sector?: ('hoteles' | 'restaurantes' | 'corporativos' | 'salud' | 'comercial' | 'hogar')[] | null;
   colaboradores?: ('menos_100' | '100_500' | 'mas_500') | null;
   interaccion?: ('alta' | 'moderada' | 'baja') | null;
   experienciaB2B?: ('sector' | 'otros_sectores' | 'diversificar') | null;

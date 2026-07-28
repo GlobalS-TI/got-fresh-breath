@@ -13,6 +13,11 @@ function optionalString(formData: FormData, key: string): string | undefined {
   return value || undefined
 }
 
+function multiValue(formData: FormData, key: string): string[] | undefined {
+  const values = formData.getAll(key).map(String).filter(Boolean)
+  return values.length > 0 ? values : undefined
+}
+
 export async function submitLeadAction(
   _prevState: LeadActionState,
   formData: FormData,
@@ -40,7 +45,7 @@ export async function submitLeadAction(
         email,
         telefono: optionalString(formData, 'telefono'),
         tipo,
-        sector: optionalString(formData, 'sector') as Lead['sector'],
+        sector: multiValue(formData, 'sector') as Lead['sector'],
         colaboradores: optionalString(formData, 'colaboradores') as Lead['colaboradores'],
         interaccion: optionalString(formData, 'interaccion') as Lead['interaccion'],
         experienciaB2B: optionalString(formData, 'experienciaB2B') as Lead['experienciaB2B'],

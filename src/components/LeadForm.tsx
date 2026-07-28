@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 
 import { submitLeadAction, type LeadActionState } from '@/actions/leads'
 import type { Lead } from '@/payload-types'
@@ -10,6 +10,8 @@ const initialState: LeadActionState = { error: '', success: false }
 const inputClass =
   'rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-brand-500 focus:outline-none'
 const labelClass = 'flex flex-col gap-1 text-sm font-medium text-slate-700'
+const checkboxRowClass = 'flex items-center gap-2 text-sm font-normal text-slate-700'
+const checkboxInputClass = 'h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500'
 
 const SECTOR_OPTIONS: { label: string; value: string }[] = [
   { label: 'Hoteles & Resorts', value: 'hoteles' },
@@ -20,13 +22,27 @@ const SECTOR_OPTIONS: { label: string; value: string }[] = [
   { label: 'Hogar', value: 'hogar' },
 ]
 
+const COLABORADORES_OPTIONS = [
+  { value: 'menos_100', label: 'Menos de 100' },
+  { value: '100_500', label: '100 a 500' },
+  { value: 'mas_500', label: 'Más de 500' },
+]
+
+const INTERACCION_OPTIONS = [
+  { value: 'alta', label: 'Sí, interacción constante' },
+  { value: 'moderada', label: 'Interacción moderada' },
+  { value: 'baja', label: 'No, solo busco implementar en los baños' },
+]
+
 type LeadFormProps = {
   tipo: Lead['tipo']
-  sectorPreseleccionado?: string
+  sectoresSeleccionados?: string[]
 }
 
-export function LeadForm({ tipo, sectorPreseleccionado }: LeadFormProps) {
+export function LeadForm({ tipo, sectoresSeleccionados }: LeadFormProps) {
   const [state, formAction, isPending] = useActionState(submitLeadAction, initialState)
+  const [colaboradores, setColaboradores] = useState('')
+  const [interaccion, setInteraccion] = useState('')
 
   if (state.success) {
     return (
@@ -36,10 +52,8 @@ export function LeadForm({ tipo, sectorPreseleccionado }: LeadFormProps) {
     )
   }
 
-  return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <input type="hidden" name="tipo" value={tipo} />
-
+  const contactFields = (
+    <>
       <label className={labelClass}>
         Nombre y apellido
         <input type="text" name="nombre" required className={inputClass} />
@@ -52,11 +66,86 @@ export function LeadForm({ tipo, sectorPreseleccionado }: LeadFormProps) {
         Teléfono
         <input type="tel" name="telefono" className={inputClass} />
       </label>
+    </>
+  )
 
-      {(tipo === 'sectores' || tipo === 'comodato') && (
+  if (tipo === 'sectores') {
+    return (
+      <form action={formAction} className="flex flex-col gap-6">
+        <input type="hidden" name="tipo" value={tipo} />
+        {sectoresSeleccionados?.map((sector) => (
+          <input key={sector} type="hidden" name="sector" value={sector} />
+        ))}
+
+        <div className="grid gap-8 md:grid-cols-2">
+          <div className="flex flex-col gap-6">
+            <div>
+              <p className="mb-2 text-sm font-medium text-slate-700">
+                ¿Para cuántos colaboradores calculas la cobertura?
+              </p>
+              <div className="flex flex-col gap-2">
+                {COLABORADORES_OPTIONS.map((opt) => (
+                  <label key={opt.value} className={checkboxRowClass}>
+                    <input
+                      type="checkbox"
+                      checked={colaboradores === opt.value}
+                      onChange={() => setColaboradores(opt.value)}
+                      className={checkboxInputClass}
+                    />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+              <input type="hidden" name="colaboradores" value={colaboradores} />
+            </div>
+
+            <div>
+              <p className="mb-2 text-sm font-medium text-slate-700">
+                ¿Tu ubicación cuenta con comedor interno o alto flujo de interacciones?
+              </p>
+              <div className="flex flex-col gap-2">
+                {INTERACCION_OPTIONS.map((opt) => (
+                  <label key={opt.value} className={checkboxRowClass}>
+                    <input
+                      type="checkbox"
+                      checked={interaccion === opt.value}
+                      onChange={() => setInteraccion(opt.value)}
+                      className={checkboxInputClass}
+                    />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+              <input type="hidden" name="interaccion" value={interaccion} />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">{contactFields}</div>
+        </div>
+
+        {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-md bg-brand-600 py-2 font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
+        >
+          {isPending ? 'Enviando...' : 'Enviar Solicitud'}
+        </button>
+      </form>
+    )
+  }
+
+  return (
+    <form action={formAction} className="flex flex-col gap-4">
+      <input type="hidden" name="tipo" value={tipo} />
+
+      {contactFields}
+
+      {tipo === 'comodato' && (
         <label className={labelClass}>
           Sector
-          <select name="sector" defaultValue={sectorPreseleccionado} className={inputClass}>
+          <select name="sector" className={inputClass}>
             <option value="">Selecciona un sector</option>
             {SECTOR_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -65,27 +154,6 @@ export function LeadForm({ tipo, sectorPreseleccionado }: LeadFormProps) {
             ))}
           </select>
         </label>
-      )}
-
-      {tipo === 'sectores' && (
-        <>
-          <label className={labelClass}>
-            ¿Para cuántos colaboradores calculas la cobertura?
-            <select name="colaboradores" className={inputClass}>
-              <option value="menos_100">Menos de 100</option>
-              <option value="100_500">100 a 500</option>
-              <option value="mas_500">Más de 500</option>
-            </select>
-          </label>
-          <label className={labelClass}>
-            ¿Tu ubicación cuenta con comedor interno o alto flujo de interacciones?
-            <select name="interaccion" className={inputClass}>
-              <option value="alta">Sí, interacción constante</option>
-              <option value="moderada">Interacción moderada</option>
-              <option value="baja">No, solo baños</option>
-            </select>
-          </label>
-        </>
       )}
 
       {tipo === 'distribuidor' && (

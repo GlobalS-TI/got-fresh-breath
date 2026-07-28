@@ -25,7 +25,7 @@ const notifyNewLead: CollectionAfterChangeHook = async ({ doc, operation }) => {
       <p><strong>Email:</strong> ${escapeHtml(doc.email)}</p>
       <p><strong>Teléfono:</strong> ${escapeHtml(doc.telefono) || '—'}</p>
       <p><strong>Origen:</strong> ${escapeHtml(tipoLabel)}</p>
-      ${doc.sector ? `<p><strong>Sector:</strong> ${escapeHtml(doc.sector)}</p>` : ''}
+      ${doc.sector?.length ? `<p><strong>Sector(es):</strong> ${escapeHtml(doc.sector.join(', '))}</p>` : ''}
       ${doc.notas ? `<p><strong>Notas:</strong> ${escapeHtml(doc.notas)}</p>` : ''}
     `,
   })
@@ -73,7 +73,8 @@ export const Leads: CollectionConfig = {
     {
       name: 'sector',
       type: 'select',
-      label: 'Sector seleccionado',
+      hasMany: true,
+      label: 'Sector(es) seleccionado(s)',
       admin: { condition: (_, { tipo }) => tipo === 'sectores' || tipo === 'comodato' },
       options: [
         { label: 'Hoteles & Resorts', value: 'hoteles' },
@@ -103,7 +104,7 @@ export const Leads: CollectionConfig = {
       options: [
         { label: 'Sí, interacción constante', value: 'alta' },
         { label: 'Interacción moderada', value: 'moderada' },
-        { label: 'No, solo baños', value: 'baja' },
+        { label: 'No, solo busco implementar en los baños', value: 'baja' },
       ],
     },
     {

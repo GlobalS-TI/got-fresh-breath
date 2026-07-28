@@ -2,6 +2,7 @@ import { ProgramaSection } from '@/components/ProgramaSection'
 import { SectoresClient } from '@/components/SectoresClient'
 import { SectoresGrid } from '@/components/SectoresGrid'
 import { SolucionesGrid } from '@/components/SolucionesGrid'
+import { VideoPlaceholder } from '@/components/VideoPlaceholder'
 
 export const metadata = {
   title: 'Sectores — Got Fresh Breath',
@@ -15,14 +16,15 @@ export default function SectoresPage() {
         <SolucionesGrid />
       </div>
 
-      <div id="elige-tu-sector" className="mx-auto max-w-6xl scroll-mt-16 px-6 py-16">
-        <h2 className="mb-2 text-center text-3xl font-bold text-slate-900">
-          Diseñemos el programa de tu empresa
-        </h2>
-        <p className="mb-10 text-center text-slate-600">
-          Selecciona tu sector para personalizar tu propuesta automáticamente.
-        </p>
-        <SectoresClient />
+      <VideoPlaceholder texto="Video — agua en movimiento (pendiente del cliente)" />
+
+      <div
+        id="elige-tu-sector"
+        className="scroll-mt-16 bg-gradient-to-b from-brand-400 to-brand-600 px-6 py-16"
+      >
+        <div className="mx-auto max-w-6xl">
+          <SectoresClient />
+        </div>
       </div>
 
       <ProgramaSection />
