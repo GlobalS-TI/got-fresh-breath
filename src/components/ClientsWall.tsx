@@ -14,21 +14,25 @@ export async function ClientsWall() {
   }
 
   return (
-    <section className="bg-slate-band py-12">
+    <section className="bg-slate-band py-16">
       <div className="mx-auto max-w-6xl px-6">
-        <h2 className="mb-8 text-center text-2xl font-bold text-white">Nuestros Clientes</h2>
-        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+        <h2 className="mb-10 text-center text-2xl font-bold text-white">Nuestros Clientes</h2>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 md:grid-cols-6">
           {clients.map((client) => {
             const logo = typeof client.logo === 'object' ? client.logo : null
             return (
-              <span key={client.id} className="text-lg font-semibold text-white/90">
+              <div key={client.id} className="flex h-10 items-center justify-center">
                 {logo?.url ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={logo.url} alt={logo.alt || client.nombre} className="h-10 w-auto object-contain" />
+                  <img
+                    src={logo.url}
+                    alt={logo.alt || client.nombre}
+                    className="h-full w-auto max-w-[9rem] object-contain"
+                  />
                 ) : (
-                  client.nombre
+                  <span className="text-lg font-semibold text-white/90">{client.nombre}</span>
                 )}
-              </span>
+              </div>
             )
           })}
         </div>
