@@ -31,7 +31,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
   const [scrolled, setScrolled] = useState(!isHome)
   const { count } = useCart()
 
-  // Solo la home tiene un hero con fondo propio detrás del nav — el resto de páginas
+  // Solo la home tiene un hero con fondo propio detrás del nav - el resto de páginas
   // siempre lo muestra sólido para no quedar flotando sobre contenido blanco.
   useEffect(() => {
     if (!isHome) {

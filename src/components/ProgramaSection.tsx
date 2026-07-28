@@ -22,9 +22,9 @@ export function ProgramaSection() {
   return (
     <>
       <section className="relative flex h-64 items-end overflow-hidden bg-slate-800 md:h-80">
-        {/* Foto — colaboradores en oficina (pendiente del cliente) */}
+        {/* Foto - colaboradores en oficina (pendiente del cliente) */}
         <div className="absolute inset-0 flex items-center justify-center border border-dashed border-white/20 text-sm text-white/40">
-          Foto — colaboradores en oficina (pendiente del cliente)
+          Foto - colaboradores en oficina (pendiente del cliente)
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/30 to-transparent" />
 

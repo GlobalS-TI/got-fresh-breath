@@ -22,7 +22,7 @@ function formatFecha(fecha: string) {
 }
 
 export const metadata = {
-  title: 'Mis pedidos — Got Fresh Breath',
+  title: 'Mis pedidos - Got Fresh Breath',
 }
 
 export default async function PedidosPage() {

@@ -4,7 +4,7 @@ import { AddToCartButtons } from '@/components/AddToCartButtons'
 import { getPayloadClient } from '@/lib/payload'
 
 export const metadata = {
-  title: 'Tienda — Got Fresh Breath',
+  title: 'Tienda - Got Fresh Breath',
 }
 
 function formatPrecio(precio: number) {

@@ -5,7 +5,7 @@ import { logoutAction } from '@/actions/auth'
 import { getSession } from '@/lib/session'
 
 export const metadata = {
-  title: 'Mi cuenta — Got Fresh Breath',
+  title: 'Mi cuenta - Got Fresh Breath',
 }
 
 export default async function CuentaPage() {

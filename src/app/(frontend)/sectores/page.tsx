@@ -5,7 +5,7 @@ import { SolucionesGrid } from '@/components/SolucionesGrid'
 import { VideoPlaceholder } from '@/components/VideoPlaceholder'
 
 export const metadata = {
-  title: 'Sectores — Got Fresh Breath',
+  title: 'Sectores - Got Fresh Breath',
 }
 
 export default function SectoresPage() {
@@ -16,7 +16,7 @@ export default function SectoresPage() {
         <SolucionesGrid />
       </div>
 
-      <VideoPlaceholder texto="Video — agua en movimiento (pendiente del cliente)" />
+      <VideoPlaceholder texto="Video - agua en movimiento (pendiente del cliente)" />
 
       <div
         id="elige-tu-sector"

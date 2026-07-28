@@ -23,7 +23,7 @@ export default function HomePage() {
       </section>
 
       <section className="flex h-72 items-center justify-center bg-gradient-to-b from-brand-200 to-brand-500 text-center text-white/90">
-        Video — el trato al cliente (pendiente del cliente)
+        Video - el trato al cliente (pendiente del cliente)
       </section>
 
       <ScrollReveal />

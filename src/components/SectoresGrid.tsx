@@ -43,7 +43,7 @@ export function SectoresGrid() {
           <div key={sector.label} className="flex flex-col">
             <div className="overflow-hidden rounded-md border border-slate-200">
               <div className="flex h-44 items-center justify-center border border-dashed border-slate-300 bg-slate-100 px-3 text-center text-xs text-slate-400">
-                Foto — {sector.label} (pendiente del cliente)
+                Foto - {sector.label} (pendiente del cliente)
               </div>
               <div className="px-4 py-3">
                 <h3 className="font-bold text-slate-900">{sector.label}</h3>

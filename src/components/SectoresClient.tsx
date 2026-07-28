@@ -66,7 +66,7 @@ export function SectoresClient() {
                 }`}
               >
                 <div className="flex h-32 items-center justify-center border border-dashed border-slate-300 bg-slate-100 px-3 text-center text-xs text-slate-400">
-                  Foto — {sector.label} (pendiente del cliente)
+                  Foto - {sector.label} (pendiente del cliente)
                 </div>
                 {checked && (
                   <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600 text-white">

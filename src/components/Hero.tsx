@@ -55,7 +55,7 @@ export function Hero() {
         </div>
 
         <div className="hero-visual relative flex h-48 items-center justify-center rounded-lg border border-dashed border-white/40 text-center text-sm text-white/70 md:h-[26rem]">
-          Imágenes de producto — pendientes del cliente
+          Imágenes de producto - pendientes del cliente
         </div>
       </div>
     </section>

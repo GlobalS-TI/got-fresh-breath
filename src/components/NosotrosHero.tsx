@@ -6,7 +6,7 @@ export function NosotrosHero() {
       </span>
 
       <div className="absolute inset-0 flex items-center justify-center border border-dashed border-white/20 px-6 text-center text-sm text-white/40">
-        Video — agua en movimiento (pendiente del cliente)
+        Video - agua en movimiento (pendiente del cliente)
       </div>
       <div className="absolute inset-0 bg-black/30" />
 

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { LoginForm } from '@/components/LoginForm'
 
 export const metadata = {
-  title: 'Iniciar sesión — Got Fresh Breath',
+  title: 'Iniciar sesión - Got Fresh Breath',
 }
 
 export default function LoginPage() {

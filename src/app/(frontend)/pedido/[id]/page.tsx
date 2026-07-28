@@ -46,7 +46,7 @@ export default async function PedidoPage({
   }
 
   const ownerId = typeof order.usuario === 'object' ? order.usuario?.id : order.usuario
-  // Los pedidos de invitado (sin usuario) requieren el token opaco de la URL — el ID secuencial
+  // Los pedidos de invitado (sin usuario) requieren el token opaco de la URL - el ID secuencial
   // por sí solo NO alcanza para verlos, así que no se pueden enumerar probando IDs consecutivos.
   // Los pedidos con cuenta requieren ser el dueño o admin.
   //
@@ -65,7 +65,7 @@ export default async function PedidoPage({
     <div className="mx-auto max-w-3xl px-6 py-16">
       <h1 className="mb-2 text-3xl font-bold text-slate-900">¡Gracias por tu pedido!</h1>
       <p className="mb-8 text-slate-600">
-        Pedido #{order.id} — {ESTADO_LABELS[order.estado] ?? order.estado}
+        Pedido #{order.id} - {ESTADO_LABELS[order.estado] ?? order.estado}
       </p>
 
       <div className="mb-8 flex flex-col gap-4">

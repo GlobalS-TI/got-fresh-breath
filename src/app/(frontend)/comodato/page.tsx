@@ -1,7 +1,7 @@
 import { LeadForm } from '@/components/LeadForm'
 
 export const metadata = {
-  title: 'Estación en Comodato — Got Fresh Breath',
+  title: 'Estación en Comodato - Got Fresh Breath',
 }
 
 export default function ComodatoPage() {

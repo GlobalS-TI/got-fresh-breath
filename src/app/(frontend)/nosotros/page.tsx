@@ -3,7 +3,7 @@ import { NosotrosHero } from '@/components/NosotrosHero'
 import { ProgramaIntegral } from '@/components/ProgramaIntegral'
 
 export const metadata = {
-  title: 'Nosotros — Got Fresh Breath',
+  title: 'Nosotros - Got Fresh Breath',
 }
 
 export default function NosotrosPage() {

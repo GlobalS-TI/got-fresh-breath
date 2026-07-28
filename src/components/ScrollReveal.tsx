@@ -30,13 +30,13 @@ export function ScrollReveal() {
       const mm = gsap.matchMedia()
 
       // Sin motion: los paneles quedan apilados en flujo normal (ver clases base en el JSX),
-      // sin pin ni overlap — es una degradación aceptable, no una animación reducida.
+      // sin pin ni overlap - es una degradación aceptable, no una animación reducida.
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         const panels = gsap.utils.toArray<HTMLElement>('.reveal-panel')
         const covers = panels.slice(1)
 
         // Solo con motion habilitado el contenedor se fija a 100vh y los paneles se
-        // sacan del flujo para apilarse unos sobre otros — sin esto (fallback de
+        // sacan del flujo para apilarse unos sobre otros - sin esto (fallback de
         // reduced-motion) cada panel ocupa su h-screen normal en el flujo del documento.
         gsap.set(scope.current, { height: '100vh', overflow: 'hidden' })
         gsap.set(panels, { position: 'absolute', inset: 0 })

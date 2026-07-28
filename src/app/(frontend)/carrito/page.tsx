@@ -2,7 +2,7 @@ import { CarritoClient } from '@/components/CarritoClient'
 import { getSession } from '@/lib/session'
 
 export const metadata = {
-  title: 'Carrito — Got Fresh Breath',
+  title: 'Carrito - Got Fresh Breath',
 }
 
 export default async function CarritoPage() {

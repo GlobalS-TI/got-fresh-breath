@@ -1,7 +1,7 @@
 import { LeadForm } from '@/components/LeadForm'
 
 export const metadata = {
-  title: 'Se Distribuidor — Got Fresh Breath',
+  title: 'Se Distribuidor - Got Fresh Breath',
 }
 
 const RESPALDO = [

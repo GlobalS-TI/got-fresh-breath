@@ -50,7 +50,7 @@ export async function ProgramaIntegral() {
                     className="h-full w-full object-contain"
                   />
                 ) : (
-                  `Foto — ${feature.placeholder} (pendiente del cliente)`
+                  `Foto - ${feature.placeholder} (pendiente del cliente)`
                 )}
               </div>
             </div>

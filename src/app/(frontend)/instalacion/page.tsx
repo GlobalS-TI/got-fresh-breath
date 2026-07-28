@@ -1,7 +1,7 @@
 import { Play } from 'lucide-react'
 
 export const metadata = {
-  title: 'Instalación — Got Fresh Breath',
+  title: 'Instalación - Got Fresh Breath',
 }
 
 const PASOS = [

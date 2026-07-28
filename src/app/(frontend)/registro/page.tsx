@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { RegisterForm } from '@/components/RegisterForm'
 
 export const metadata = {
-  title: 'Crear cuenta — Got Fresh Breath',
+  title: 'Crear cuenta - Got Fresh Breath',
 }
 
 export default function RegistroPage() {

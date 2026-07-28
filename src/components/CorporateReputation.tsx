@@ -3,9 +3,9 @@ import Link from 'next/link'
 export function CorporateReputation() {
   return (
     <section className="relative h-[32rem] overflow-hidden bg-slate-800 md:h-[36rem]">
-      {/* Placeholder de foto — pendiente del cliente (personal en recepción) */}
+      {/* Placeholder de foto - pendiente del cliente (personal en recepción) */}
       <div className="absolute inset-0 flex items-center justify-center border border-dashed border-white/20 text-sm text-white/40">
-        Foto — personal en recepción (pendiente del cliente)
+        Foto - personal en recepción (pendiente del cliente)
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/50 to-transparent" />
