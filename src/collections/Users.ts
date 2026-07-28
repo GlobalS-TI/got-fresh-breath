@@ -8,9 +8,18 @@ const SELF_SERVICE_ROLES = ['individual', 'empresa']
 // Evita escalación de privilegios: un usuario no-admin no puede asignarse un rol
 // fuera de SELF_SERVICE_ROLES al crear su cuenta, ni cambiar su rol después al
 // editar su propio perfil.
-const enforceDefaultRol: CollectionBeforeChangeHook = ({ data, operation, req, originalDoc }) => {
+const enforceDefaultRol: CollectionBeforeChangeHook = async ({ data, operation, req, originalDoc }) => {
   const isAdmin = req.user?.rol === 'admin'
   if (isAdmin) return data
+
+  // Válvula de arranque: si todavía no existe ningún admin en el sistema no hay
+  // privilegio que escalar, así que se permite fijar el rol libremente (crear o
+  // promover una cuenta existente). En cuanto exista un admin, este bypass se cierra.
+  const { totalDocs: adminCount } = await req.payload.count({
+    collection: 'users',
+    where: { rol: { equals: 'admin' } },
+  })
+  if (adminCount === 0) return data
 
   if (operation === 'create') {
     data.rol = SELF_SERVICE_ROLES.includes(data.rol) ? data.rol : 'individual'
