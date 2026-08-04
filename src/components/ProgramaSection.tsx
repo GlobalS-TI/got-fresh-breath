@@ -1,5 +1,8 @@
 import Link from 'next/link'
 
+import { MediaSlot } from '@/components/MediaSlot'
+import { getSiteMediaSlot } from '@/lib/siteMedia'
+
 const PASOS = [
   {
     numero: 1,
@@ -18,14 +21,18 @@ const PASOS = [
   },
 ]
 
-export function ProgramaSection() {
+export async function ProgramaSection() {
+  const foto = await getSiteMediaSlot('programa-section.colaboradores')
+
   return (
     <>
       <section className="relative flex h-64 items-end overflow-hidden bg-slate-800 md:h-80">
-        {/* Foto - colaboradores en oficina (pendiente del cliente) */}
-        <div className="absolute inset-0 flex items-center justify-center border border-dashed border-white/20 text-sm text-white/40">
-          Foto - colaboradores en oficina (pendiente del cliente)
-        </div>
+        <MediaSlot
+          media={foto}
+          fallbackLabel="Foto - colaboradores en oficina (pendiente del cliente)"
+          className="absolute inset-0 flex items-center justify-center border border-dashed border-white/20 text-sm text-white/40"
+          mediaClassName="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/30 to-transparent" />
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-8">

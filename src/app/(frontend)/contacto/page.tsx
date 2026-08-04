@@ -2,15 +2,18 @@ import { Clock, Globe, Mail, MapPin, Phone } from 'lucide-react'
 
 import { LeadForm } from '@/components/LeadForm'
 import { VideoPlaceholder } from '@/components/VideoPlaceholder'
+import { getSiteMediaSlot } from '@/lib/siteMedia'
 
 export const metadata = {
   title: 'Contacto - Got Fresh Breath',
 }
 
-export default function ContactoPage() {
+export default async function ContactoPage() {
+  const heroVideo = await getSiteMediaSlot('contacto.hero-agua')
+
   return (
     <>
-      <VideoPlaceholder texto="Video - agua fluyendo (pendiente del cliente)" />
+      <VideoPlaceholder texto="Video - agua fluyendo (pendiente del cliente)" media={heroVideo} />
 
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-400 to-brand-600 px-6 py-14">
         <h1 className="mx-auto max-w-2xl text-center text-2xl font-bold text-white md:text-3xl">

@@ -18,6 +18,7 @@ const FRONTEND_CSP = [
   `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''} https://www.paypal.com https://www.paypalobjects.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
+  "media-src 'self' https:",
   "font-src 'self' data:",
   "frame-src 'self' https://www.google.com https://www.paypal.com https://www.sandbox.paypal.com",
   "connect-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com",

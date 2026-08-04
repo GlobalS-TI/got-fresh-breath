@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -11,6 +12,7 @@ import { Products } from './collections/Products'
 import { Orders } from './collections/Orders'
 import { Clients } from './collections/Clients'
 import { Leads } from './collections/Leads'
+import { SiteMedia } from './globals/SiteMedia'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -28,6 +30,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Products, Orders, Clients, Leads],
+  globals: [SiteMedia],
   editor: lexicalEditor(),
   cors: [SERVER_URL],
   csrf: [SERVER_URL],
@@ -41,5 +44,17 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    // Sin BLOB_READ_WRITE_TOKEN (ej. en local) cae de vuelta al disco local
+    // configurado en Media.ts — solo se activa cuando el proyecto está
+    // conectado a un Vercel Blob store.
+    ...(process.env.BLOB_READ_WRITE_TOKEN
+      ? [
+          vercelBlobStorage({
+            collections: { media: true },
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+          }),
+        ]
+      : []),
+  ],
 })

@@ -1,10 +1,28 @@
+import { MediaSlot } from '@/components/MediaSlot'
 import { getPayloadClient } from '@/lib/payload'
+import { getSiteMediaSlot } from '@/lib/siteMedia'
 
 const FEATURES = [
-  { titulo: 'Instalación estética de los equipos', placeholder: 'Dispensadores instalados en pared' },
-  { titulo: 'Mantenimiento permanente', placeholder: 'Dispensador en baño' },
-  { titulo: 'Reposición automática de consumibles', placeholder: 'Enjuague bucal y vasos' },
-  { titulo: 'Operación continua y garantizada', placeholder: 'Equipo de logística en almacén' },
+  {
+    key: 'programa-integral.instalacion-estetica',
+    titulo: 'Instalación estética de los equipos',
+    placeholder: 'Dispensadores instalados en pared',
+  },
+  {
+    key: 'programa-integral.mantenimiento',
+    titulo: 'Mantenimiento permanente',
+    placeholder: 'Dispensador en baño',
+  },
+  {
+    key: 'programa-integral.reposicion-consumibles',
+    titulo: 'Reposición automática de consumibles',
+    placeholder: 'Enjuague bucal y vasos',
+  },
+  {
+    key: 'programa-integral.operacion-continua',
+    titulo: 'Operación continua y garantizada',
+    placeholder: 'Equipo de logística en almacén',
+  },
 ]
 
 export async function ProgramaIntegral() {
@@ -17,6 +35,10 @@ export async function ProgramaIntegral() {
   const primeraImagen = consumibles[0]?.imagenes?.[0]?.imagen
   const consumibleImagenUrl = typeof primeraImagen === 'object' ? primeraImagen?.url : null
 
+  const features = await Promise.all(
+    FEATURES.map(async (feature) => ({ ...feature, media: await getSiteMediaSlot(feature.key) })),
+  )
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-brand-400 to-brand-500 px-6 py-16">
       <h2 className="mx-auto mb-12 max-w-3xl text-center text-2xl font-bold text-white">
@@ -24,9 +46,9 @@ export async function ProgramaIntegral() {
       </h2>
 
       <div className="mx-auto flex max-w-4xl flex-col gap-12">
-        {FEATURES.map((feature, i) => {
+        {features.map((feature, i) => {
           const reversed = i % 2 === 1
-          const isConsumibles = feature.titulo === 'Reposición automática de consumibles'
+          const isConsumibles = feature.key === 'programa-integral.reposicion-consumibles'
 
           return (
             <div
@@ -42,7 +64,13 @@ export async function ProgramaIntegral() {
               </h3>
 
               <div className="flex h-40 w-full max-w-sm flex-1 items-center justify-center rounded-md border border-dashed border-white/30 bg-white/10 px-3 text-center text-xs text-white/60">
-                {isConsumibles && consumibleImagenUrl ? (
+                {feature.media ? (
+                  <MediaSlot
+                    media={feature.media}
+                    fallbackLabel={`Foto - ${feature.placeholder} (pendiente del cliente)`}
+                    mediaClassName="h-full w-full object-contain"
+                  />
+                ) : isConsumibles && consumibleImagenUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={consumibleImagenUrl}

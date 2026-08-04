@@ -5,6 +5,8 @@ import { useRef, useState } from 'react'
 import { Check } from 'lucide-react'
 
 import { LeadForm } from '@/components/LeadForm'
+import { MediaSlot } from '@/components/MediaSlot'
+import type { Media } from '@/payload-types'
 
 const SECTORES = [
   { value: 'hoteles', label: 'Hoteles & Resorts', desc: 'Protege la experiencia de tus huéspedes en áreas comunes, spas y restaurantes.' },
@@ -15,7 +17,11 @@ const SECTORES = [
   { value: 'hogar', label: 'Hogar', desc: 'Lleva a tus espacios residenciales un sistema automatizado de frescura premium.' },
 ]
 
-export function SectoresClient() {
+type SectoresClientProps = {
+  sectoresMedia: Record<string, Media | null>
+}
+
+export function SectoresClient({ sectoresMedia }: SectoresClientProps) {
   const [selectedSectores, setSelectedSectores] = useState<string[]>([])
   const pickerRef = useRef<HTMLDivElement>(null)
 
@@ -65,9 +71,12 @@ export function SectoresClient() {
                   checked ? 'border-white' : 'border-transparent'
                 }`}
               >
-                <div className="flex h-32 items-center justify-center border border-dashed border-slate-300 bg-slate-100 px-3 text-center text-xs text-slate-400">
-                  Foto - {sector.label} (pendiente del cliente)
-                </div>
+                <MediaSlot
+                  media={sectoresMedia[sector.value] ?? null}
+                  fallbackLabel={`Foto - ${sector.label} (pendiente del cliente)`}
+                  className="flex h-32 items-center justify-center border border-dashed border-slate-300 bg-slate-100 px-3 text-center text-xs text-slate-400"
+                  mediaClassName="h-32 w-full object-cover"
+                />
                 {checked && (
                   <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600 text-white">
                     <Check className="h-4 w-4" />

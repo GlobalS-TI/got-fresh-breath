@@ -1,5 +1,8 @@
 import { Play } from 'lucide-react'
 
+import { MediaSlot } from '@/components/MediaSlot'
+import { getSiteMediaSlot } from '@/lib/siteMedia'
+
 export const metadata = {
   title: 'Instalación - Got Fresh Breath',
 }
@@ -35,14 +38,22 @@ const PASOS = [
   },
 ]
 
-export default function InstalacionPage() {
+export default async function InstalacionPage() {
+  const video = await getSiteMediaSlot('instalacion.hero-video')
+
   return (
     <>
       <section className="mx-auto max-w-6xl px-6 py-12">
         <h1 className="sr-only">Instalación</h1>
-        <div className="flex aspect-video items-center justify-center gap-3 rounded-md border border-dashed border-slate-300 bg-slate-100 text-slate-400">
-          <Play className="h-6 w-6" />
-          <span className="text-sm">Video de instalación (pendiente del cliente)</span>
+        <div className="flex aspect-video items-center justify-center gap-3 overflow-hidden rounded-md border border-dashed border-slate-300 bg-slate-100 text-slate-400">
+          {!video && <Play className="h-6 w-6" />}
+          <MediaSlot
+            media={video}
+            fallbackLabel="Video de instalación (pendiente del cliente)"
+            className="text-sm"
+            mediaClassName="h-full w-full object-cover"
+            videoProps={{ autoPlay: false, loop: false, muted: false, controls: true }}
+          />
         </div>
       </section>
 

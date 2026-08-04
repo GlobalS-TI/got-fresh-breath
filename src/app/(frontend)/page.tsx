@@ -1,9 +1,13 @@
 import { ClientsWall } from '@/components/ClientsWall'
 import { CorporateReputation } from '@/components/CorporateReputation'
 import { Hero } from '@/components/Hero'
+import { MediaSlot } from '@/components/MediaSlot'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { getSiteMediaSlot } from '@/lib/siteMedia'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const heroVideo = await getSiteMediaSlot('home.hero-trato-cliente')
+
   return (
     <>
       <Hero />
@@ -22,8 +26,12 @@ export default function HomePage() {
         </p>
       </section>
 
-      <section className="flex h-72 items-center justify-center bg-gradient-to-b from-brand-200 to-brand-500 text-center text-white/90">
-        Video - el trato al cliente (pendiente del cliente)
+      <section className="relative flex h-72 items-center justify-center overflow-hidden bg-gradient-to-b from-brand-200 to-brand-500 text-center text-white/90">
+        <MediaSlot
+          media={heroVideo}
+          fallbackLabel="Video - el trato al cliente (pendiente del cliente)"
+          mediaClassName="absolute inset-0 h-full w-full object-cover"
+        />
       </section>
 
       <ScrollReveal />

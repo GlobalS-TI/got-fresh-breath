@@ -1,7 +1,9 @@
 import Link from 'next/link'
 
 import { AddToCartButtons } from '@/components/AddToCartButtons'
+import { MediaSlot } from '@/components/MediaSlot'
 import { getPayloadClient } from '@/lib/payload'
+import { getSiteMediaSlot } from '@/lib/siteMedia'
 
 export const metadata = {
   title: 'Tienda - Got Fresh Breath',
@@ -13,23 +15,30 @@ function formatPrecio(precio: number) {
 
 export default async function TiendaPage() {
   const payload = await getPayloadClient()
-  const { docs: products } = await payload.find({
-    collection: 'products',
-    where: { activo: { equals: true } },
-    sort: 'nombre',
-    limit: 100,
-  })
+  const [{ docs: products }, heroAnimacion] = await Promise.all([
+    payload.find({
+      collection: 'products',
+      where: { activo: { equals: true } },
+      sort: 'nombre',
+      limit: 100,
+    }),
+    getSiteMediaSlot('tienda.hero-animacion'),
+  ])
 
   return (
     <>
       <section className="relative overflow-hidden bg-slate-100">
-        <span className="absolute left-6 top-6 z-10 text-sm font-bold tracking-widest text-slate-500">
-          VIDEO ANIMACIÓN 3D
-        </span>
-        <div className="flex h-72 items-center justify-center border border-dashed border-slate-300 px-6 text-center text-sm text-slate-400 md:h-96">
-          Animación 3D del dispensador con transición entre acabados (Nickel / Negro / Blanco) que
-          continúa recorriendo el resto de los productos (pendiente del cliente)
-        </div>
+        {!heroAnimacion && (
+          <span className="absolute left-6 top-6 z-10 text-sm font-bold tracking-widest text-slate-500">
+            VIDEO ANIMACIÓN 3D
+          </span>
+        )}
+        <MediaSlot
+          media={heroAnimacion}
+          fallbackLabel="Animación 3D del dispensador con transición entre acabados (Nickel / Negro / Blanco) que continúa recorriendo el resto de los productos (pendiente del cliente)"
+          className="flex h-72 items-center justify-center border border-dashed border-slate-300 px-6 text-center text-sm text-slate-400 md:h-96"
+          mediaClassName="h-72 w-full object-cover md:h-96"
+        />
       </section>
 
       <div className="mx-auto max-w-6xl px-6 py-16">

@@ -95,8 +95,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-media': SiteMedia;
+  };
+  globalsSelect: {
+    'site-media': SiteMediaSelect<false> | SiteMediaSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -584,6 +588,42 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Reemplaza los placeholders de fotos y videos del sitio. Cada fila corresponde a un lugar fijo del frontend — sube el archivo ahí para que aparezca en la página. Si la dejas vacía, sigue mostrando el placeholder de siempre.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-media".
+ */
+export interface SiteMedia {
+  id: number;
+  slots?:
+    | {
+        key: string;
+        label?: string | null;
+        media?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-media_select".
+ */
+export interface SiteMediaSelect<T extends boolean = true> {
+  slots?:
+    | T
+    | {
+        key?: T;
+        label?: T;
+        media?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
