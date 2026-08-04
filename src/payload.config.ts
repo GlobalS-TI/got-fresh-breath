@@ -53,6 +53,10 @@ export default buildConfig({
           vercelBlobStorage({
             collections: { media: true },
             token: process.env.BLOB_READ_WRITE_TOKEN,
+            // Sube el archivo directo del navegador a Blob, sin pasar por la función
+            // serverless — Vercel limita el body de una función a 4.5MB, insuficiente
+            // para videos.
+            clientUploads: true,
           }),
         ]
       : []),
