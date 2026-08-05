@@ -27,6 +27,7 @@ export default async function SectoresPage() {
       <VideoPlaceholder
         texto="Video - agua en movimiento (pendiente del cliente)"
         media={mediaMap['sectores-page.hero-agua'] ?? null}
+        className="h-80 md:h-[32rem]"
       />
 
       <div

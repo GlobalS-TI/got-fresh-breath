@@ -63,7 +63,7 @@ export async function ProgramaIntegral() {
                 {feature.titulo}
               </h3>
 
-              <div className="flex h-40 w-full max-w-sm flex-1 items-center justify-center rounded-md border border-dashed border-white/30 bg-white/10 px-3 text-center text-xs text-white/60">
+              <div className="flex h-56 w-full max-w-md flex-1 items-center justify-center rounded-md border border-dashed border-white/30 bg-white/10 px-3 text-center text-xs text-white/60 md:h-72">
                 {feature.media ? (
                   <MediaSlot
                     media={feature.media}
