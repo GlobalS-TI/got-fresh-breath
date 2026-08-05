@@ -9,6 +9,7 @@ export type SiteMediaSlotDef = {
 // implica agregar su entrada aquí.
 export const SITE_MEDIA_SLOTS: SiteMediaSlotDef[] = [
   { key: 'home.hero-trato-cliente', label: 'Home - Video trato al cliente' },
+  { key: 'home.hero-imagenes-producto', label: 'Home - Imágenes de producto (hero)' },
   { key: 'corporate-reputation.recepcion', label: 'Home - Foto personal en recepción' },
   { key: 'nosotros.hero-agua', label: 'Nosotros - Video agua en movimiento' },
   { key: 'programa-integral.instalacion-estetica', label: 'Nosotros - Foto dispensadores en pared' },

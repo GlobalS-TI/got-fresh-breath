@@ -6,11 +6,14 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
 
 export default async function HomePage() {
-  const heroVideo = await getSiteMediaSlot('home.hero-trato-cliente')
+  const [heroVideo, heroProductImage] = await Promise.all([
+    getSiteMediaSlot('home.hero-trato-cliente'),
+    getSiteMediaSlot('home.hero-imagenes-producto'),
+  ])
 
   return (
     <>
-      <Hero />
+      <Hero productImage={heroProductImage} />
 
       <ClientsWall />
 

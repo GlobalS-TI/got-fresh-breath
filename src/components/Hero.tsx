@@ -3,9 +3,15 @@
 import Link from 'next/link'
 import { useRef } from 'react'
 
+import { MediaSlot } from '@/components/MediaSlot'
 import { gsap, useGSAP } from '@/lib/gsap'
+import type { Media } from '@/payload-types'
 
-export function Hero() {
+type HeroProps = {
+  productImage?: Media | null
+}
+
+export function Hero({ productImage = null }: HeroProps) {
   const scope = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -54,8 +60,13 @@ export function Hero() {
           </Link>
         </div>
 
-        <div className="hero-visual relative flex h-48 items-center justify-center rounded-lg border border-dashed border-white/40 text-center text-sm text-white/70 md:h-[26rem]">
-          Imágenes de producto - pendientes del cliente
+        <div className="hero-visual relative h-48 overflow-hidden rounded-lg md:h-[26rem]">
+          <MediaSlot
+            media={productImage}
+            fallbackLabel="Imágenes de producto - pendientes del cliente"
+            className="flex h-full items-center justify-center rounded-lg border border-dashed border-white/40 text-center text-sm text-white/70"
+            mediaClassName="h-full w-full object-cover"
+          />
         </div>
       </div>
     </section>
