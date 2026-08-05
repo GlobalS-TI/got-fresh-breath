@@ -40,7 +40,7 @@ export async function ProgramaIntegral() {
   )
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-brand-400 to-brand-500 px-6 py-16">
+    <section className="relative overflow-hidden bg-linear-to-b from-brand-400 to-brand-500 px-6 py-16">
       <h2 className="mx-auto mb-12 max-w-3xl text-center text-2xl font-bold text-white">
         Un programa integral en 4 palabras:
       </h2>
@@ -63,7 +63,7 @@ export async function ProgramaIntegral() {
                 {feature.titulo}
               </h3>
 
-              <div className="flex h-56 w-full max-w-md flex-1 items-center justify-center rounded-md border border-dashed border-white/30 bg-white/10 px-3 text-center text-xs text-white/60 md:h-72">
+              <div className="flex h-56 w-full max-w-md flex-1 items-center justify-center rounded-md  px-3 text-center text-xs text-white/60 md:h-72">
                 {feature.media ? (
                   <MediaSlot
                     media={feature.media}
