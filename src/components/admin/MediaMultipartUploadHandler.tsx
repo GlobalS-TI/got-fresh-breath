@@ -4,6 +4,8 @@ import { createClientUploadHandler, getFileKey } from '@payloadcms/plugin-cloud-
 import { upload } from '@vercel/blob/client'
 import { formatAdminURL } from 'payload/shared'
 
+import { MAX_MEDIA_FILE_SIZE_BYTES } from '@/lib/mediaLimits'
+
 type Extra = {
   addRandomSuffix: boolean
   useCompositePrefixes: boolean
@@ -23,6 +25,12 @@ function posixBasename(key: string) {
 // solo hace falta cambiar el comportamiento del lado del cliente.
 export const MediaMultipartUploadHandler = createClientUploadHandler<Extra>({
   handler: async ({ apiRoute, collectionSlug, docPrefix, extra, file, prefix, serverHandlerPath, serverURL, updateFilename }) => {
+    if (file.size > MAX_MEDIA_FILE_SIZE_BYTES) {
+      throw new Error(
+        `El archivo pesa ${(file.size / (1024 * 1024)).toFixed(1)}MB, que excede el límite de ${MAX_MEDIA_FILE_SIZE_BYTES / (1024 * 1024)}MB.`,
+      )
+    }
+
     const endpointRoute = formatAdminURL({
       apiRoute,
       path: serverHandlerPath,

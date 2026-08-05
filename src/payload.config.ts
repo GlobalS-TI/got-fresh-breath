@@ -27,9 +27,16 @@ const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 // function body) — no config option to request a multipart upload instead. This plugin
 // registers our own handler (src/components/admin/MediaMultipartUploadHandler.tsx) for the
 // `media` collection, which reuses the same server-side token route but requests
-// `multipart: true` on the client. It's pushed after vercelBlobStorage's own provider, and
-// since upload handlers are stored in a Map keyed by collection slug, ours (registered later)
-// wins.
+// `multipart: true` on the client.
+//
+// admin.components.providers gets nested via recursion (see @payloadcms/next's
+// NestProviders.js): providers[0] ends up OUTERMOST, wrapping providers[1], which wraps
+// providers[2], etc. React fires child effects before parent effects, so the INNERMOST
+// provider's `useEffect` (which is where the upload handler actually gets registered) runs
+// FIRST and the OUTERMOST runs LAST — meaning whichever provider is pushed EARLIER in the
+// array wins (its registration overwrites the others', since it fires last). That's why this
+// plugin must run — and therefore push its provider — BEFORE vercelBlobStorage in the plugins
+// array below.
 const withMediaMultipartUploads: Plugin = (incomingConfig: Config): Config => {
   const admin = incomingConfig.admin ?? {}
   const components = admin.components ?? {}
@@ -86,6 +93,7 @@ export default buildConfig({
     // conectado a un Vercel Blob store.
     ...(process.env.BLOB_READ_WRITE_TOKEN
       ? [
+          withMediaMultipartUploads,
           vercelBlobStorage({
             collections: { media: true },
             token: process.env.BLOB_READ_WRITE_TOKEN,
@@ -94,7 +102,6 @@ export default buildConfig({
             // para videos.
             clientUploads: true,
           }),
-          withMediaMultipartUploads,
         ]
       : []),
   ],
