@@ -27,7 +27,7 @@ export default async function TiendaPage() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-slate-100">
+      {/* <section className="relative overflow-hidden bg-slate-100">
         {!heroAnimacion && (
           <span className="absolute left-6 top-6 z-10 text-sm font-bold tracking-widest text-slate-500">
             VIDEO ANIMACIÓN 3D
@@ -36,10 +36,10 @@ export default async function TiendaPage() {
         <MediaSlot
           media={heroAnimacion}
           fallbackLabel="Animación 3D del dispensador con transición entre acabados (Nickel / Negro / Blanco) que continúa recorriendo el resto de los productos (pendiente del cliente)"
-          className="flex h-72 items-center justify-center border border-dashed border-slate-300 px-6 text-center text-sm text-slate-400 md:h-96"
-          mediaClassName="h-72 w-full object-cover md:h-96"
+          className="flex h-72 items-center justify-center border border-dashed border-slate-300 px-6 text-center text-sm text-slate-400 md:h-full"
+          mediaClassName="h-72 w-full object-cover md:h-full"
         />
-      </section>
+      </section> */}
 
       <div className="mx-auto max-w-6xl px-6 py-16">
         <h1 className="mb-10 text-3xl font-bold text-slate-900">Tienda</h1>
@@ -51,14 +51,22 @@ export default async function TiendaPage() {
             {products.map((product) => {
               const primeraImagen = product.imagenes?.[0]?.imagen
               const imagenUrl = typeof primeraImagen === 'object' ? primeraImagen?.url : null
-              const fichaTecnica = typeof product.fichaTecnica === 'object' ? product.fichaTecnica : null
+              const fichaTecnica =
+                typeof product.fichaTecnica === 'object' ? product.fichaTecnica : null
 
               return (
-                <div key={product.id} className="flex flex-col rounded-lg border border-slate-200 p-4">
+                <div
+                  key={product.id}
+                  className="flex flex-col rounded-lg border border-slate-200 p-4"
+                >
                   <Link href={`/tienda/${product.slug}`} className="mb-3 block">
                     {imagenUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={imagenUrl} alt={product.nombre} className="h-40 w-full object-contain" />
+                      <img
+                        src={imagenUrl}
+                        alt={product.nombre}
+                        className="h-40 w-full object-contain"
+                      />
                     ) : (
                       <div className="flex h-40 items-center justify-center rounded bg-slate-100 text-xs text-slate-400">
                         Imagen pendiente
