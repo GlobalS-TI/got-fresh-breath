@@ -2,7 +2,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, type Config, type Plugin } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
@@ -21,6 +21,42 @@ const dirname = path.dirname(filename)
 // de exponer la API REST/GraphQL a otros orígenes. Restringido para reducir superficie de ataque
 // (ej. otro sitio haciendo requests autenticadas usando la cookie payload-token del navegador).
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+
+// @payloadcms/storage-vercel-blob's client-upload handler always does a single PUT direct to
+// vercel.com/api/blob, which is capped at ~4.5MB (same platform-wide limit as a serverless
+// function body) — no config option to request a multipart upload instead. This plugin
+// registers our own handler (src/components/admin/MediaMultipartUploadHandler.tsx) for the
+// `media` collection, which reuses the same server-side token route but requests
+// `multipart: true` on the client. It's pushed after vercelBlobStorage's own provider, and
+// since upload handlers are stored in a Map keyed by collection slug, ours (registered later)
+// wins.
+const withMediaMultipartUploads: Plugin = (incomingConfig: Config): Config => {
+  const admin = incomingConfig.admin ?? {}
+  const components = admin.components ?? {}
+  const providers = components.providers ?? []
+
+  return {
+    ...incomingConfig,
+    admin: {
+      ...admin,
+      components: {
+        ...components,
+        providers: [
+          ...providers,
+          {
+            clientProps: {
+              collectionSlug: 'media',
+              enabled: true,
+              extra: { addRandomSuffix: false, useCompositePrefixes: false },
+              serverHandlerPath: '/vercel-blob-client-upload-route',
+            },
+            path: '/components/admin/MediaMultipartUploadHandler#MediaMultipartUploadHandler',
+          },
+        ],
+      },
+    },
+  }
+}
 
 export default buildConfig({
   admin: {
@@ -58,6 +94,7 @@ export default buildConfig({
             // para videos.
             clientUploads: true,
           }),
+          withMediaMultipartUploads,
         ]
       : []),
   ],
