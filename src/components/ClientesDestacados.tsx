@@ -16,11 +16,13 @@ export async function ClientesDestacados() {
       <div className="mx-auto max-w-6xl">
         <h2 className="mb-4 text-2xl font-bold text-slate-900">Algunos de nuestros clientes</h2>
         <p className="mb-10 max-w-3xl text-slate-700">
-          <span className="font-semibold text-brand-600">Empresas de clase mundial</span> ya disfrutan de la
-          experiencia <span className="font-semibold text-brand-600">Got Fresh Breath</span>.
+          <span className="font-semibold text-brand-600">Empresas de clase mundial</span> ya
+          disfrutan de la experiencia{' '}
+          <span className="font-semibold text-brand-600">Got Fresh Breath</span>.
           <br />
           <br />
-          Desde corporativos hasta hoteles y restaurantes, nuestros clientes confían en nosotros para{' '}
+          Desde corporativos hasta hoteles y restaurantes, nuestros clientes confían en nosotros
+          para{' '}
           <span className="font-semibold text-brand-600">
             ofrecer frescura, innovación y un valor agregado a colaboradores y visitantes
           </span>
@@ -37,7 +39,7 @@ export async function ClientesDestacados() {
                   <img
                     src={logo.url}
                     alt={logo.alt || client.nombre}
-                    className="h-full w-auto max-w-[10rem] object-contain"
+                    className="h-full min-w-40 object-cover"
                   />
                 ) : (
                   <span className="text-lg font-semibold text-slate-700">{client.nombre}</span>
