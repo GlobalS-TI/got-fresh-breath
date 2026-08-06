@@ -27,7 +27,7 @@ export async function ClientsWall() {
                   <img
                     src={logo.url}
                     alt={logo.alt || client.nombre}
-                    className="h-full w-auto max-w-[9rem] object-contain"
+                    className="h-full min-w-40 object-cover"
                   />
                 ) : (
                   <span className="text-lg font-semibold text-white/90">{client.nombre}</span>
