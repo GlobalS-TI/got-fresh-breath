@@ -21,7 +21,7 @@ export async function ClientsWall() {
           {clients.map((client) => {
             const logo = typeof client.logo === 'object' ? client.logo : null
             return (
-              <div key={client.id} className="flex h-10 w-40 items-center justify-center">
+              <div key={client.id} className="flex h-20 w-40 items-center justify-center">
                 {logo?.url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
