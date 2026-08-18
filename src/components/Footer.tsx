@@ -24,15 +24,15 @@ function InstagramIcon(props: SVGProps<SVGSVGElement>) {
 
 export function Footer() {
   return (
-    <footer className="bg-brand-700 text-brand-50">
+    <footer className="bg-brand-100 text-brand-700">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2 text-white">
           <Logo />
           <span className="text-brand-200">·</span>
-          <span className="text-sm font-medium text-brand-100">GLOBALsupplier</span>
+          <span className="text-sm font-medium text-brand-600">GLOBALsupplier</span>
         </div>
 
-        <div className="flex flex-col gap-1.5 text-sm text-brand-100 md:items-end">
+        <div className="flex flex-col gap-1.5 text-sm text-brand-600 md:items-end">
           <a
             href="https://wa.me/528116809833"
             className="flex items-center gap-2 hover:text-white md:flex-row-reverse"
@@ -52,10 +52,10 @@ export function Footer() {
 
       <div className="border-t border-brand-600/50 px-6 py-4">
         <div className="flex justify-center gap-4">
-          <a href="#" aria-label="Facebook" className="text-brand-200 hover:text-white">
+          <a href="#" aria-label="Facebook" className="text-brand-400 hover:text-white">
             <FacebookIcon className="h-5 w-5" />
           </a>
-          <a href="#" aria-label="Instagram" className="text-brand-200 hover:text-white">
+          <a href="#" aria-label="Instagram" className="text-brand-400 hover:text-white">
             <InstagramIcon className="h-5 w-5" />
           </a>
         </div>
