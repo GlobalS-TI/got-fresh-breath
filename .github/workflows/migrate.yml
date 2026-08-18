@@ -25,3 +25,4 @@ jobs:
       - run: pnpm run migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
