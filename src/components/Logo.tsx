@@ -12,7 +12,7 @@ export function Logo({ light = false }: LogoProps) {
       alt="Got Fresh Breath"
       width={291}
       height={59}
-      className={`h-8 w-auto ${light ? 'brightness-0 invert' : ''}`}
+      className={`h-10 w-auto ${light ? 'brightness-0 invert' : ''}`}
       priority
     />
   )
