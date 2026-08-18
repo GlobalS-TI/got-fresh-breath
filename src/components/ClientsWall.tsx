@@ -16,12 +16,12 @@ export async function ClientsWall() {
   return (
     <section className="bg-brand-50 py-16">
       <div className="mx-auto max-w-6xl px-6">
-        <h2 className="mb-10 text-center text-2xl font-bold text-white">Nuestros Clientes</h2>
+        <h2 className="mb-10 text-center text-2xl font-bold text-brand-900">Nuestros Clientes</h2>
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 md:grid-cols-6">
           {clients.map((client) => {
             const logo = typeof client.logo === 'object' ? client.logo : null
             return (
-              <div key={client.id} className="flex h-30 w-50 items-center justify-center">
+              <div key={client.id} className="flex h-30 w-full items-center justify-center">
                 {logo?.url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
