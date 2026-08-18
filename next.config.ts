@@ -13,15 +13,19 @@ const dirname = path.dirname(__filename)
 // 'unsafe-eval' solo se agrega en dev: Next/React lo usan para HMR y para reconstruir stack
 // traces del overlay de errores. React nunca usa eval() en producción, así que en build de
 // producción se omite y el CSP queda más estricto.
+//
+// Dominios de Google Tag Manager / GA4 / Ads: gtm.js y gtag.js se sirven desde
+// googletagmanager.com; los hits de GA4 y las conversiones de Ads salen por
+// google-analytics.com y (para algunos tags de Ads/remarketing) doubleclick.net.
 const FRONTEND_CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''} https://www.paypal.com https://www.paypalobjects.com`,
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''} https://www.paypal.com https://www.paypalobjects.com https://www.googletagmanager.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "media-src 'self' https:",
   "font-src 'self' data:",
-  "frame-src 'self' https://www.google.com https://www.paypal.com https://www.sandbox.paypal.com",
-  "connect-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com",
+  "frame-src 'self' https://www.google.com https://www.paypal.com https://www.sandbox.paypal.com https://www.googletagmanager.com",
+  "connect-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://googleads.g.doubleclick.net https://td.doubleclick.net",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https://www.paypal.com",
