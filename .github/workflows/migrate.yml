@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - '**'
+    paths:
+      - 'src/migrations/**'
+  workflow_dispatch:
 
 jobs:
   migrate:
