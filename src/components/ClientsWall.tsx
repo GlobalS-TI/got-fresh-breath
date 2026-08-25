@@ -14,7 +14,7 @@ export async function ClientsWall() {
   }
 
   return (
-    <section className="bg-brand-50 py-16">
+    <section className="bg-white py-16">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-10 text-center text-2xl font-bold text-brand-900">Nuestros Clientes</h2>
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 md:grid-cols-6">

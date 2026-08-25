@@ -19,24 +19,17 @@ export default async function SectoresPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <SectoresGrid />
-        <SolucionesGrid />
-      </div>
-
-      <VideoPlaceholder
-        texto="Video - agua en movimiento (pendiente del cliente)"
-        media={mediaMap['sectores-page.hero-agua'] ?? null}
-        className="h-80 md:h-[32rem]"
-      />
-
       <div
         id="elige-tu-sector"
-        className="scroll-mt-16 bg-gradient-to-b from-brand-400 to-brand-600 px-6 py-16"
+        className="scroll-mt-16 bg-linear-to-b from-brand-400 to-brand-600 px-6 py-16"
       >
         <div className="mx-auto max-w-6xl">
           <SectoresClient sectoresMedia={sectoresMedia} />
         </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-16">
+        <SolucionesGrid />
       </div>
 
       <ProgramaSection />

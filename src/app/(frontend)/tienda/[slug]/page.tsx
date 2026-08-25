@@ -40,7 +40,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
                     key={entry.id ?? imagen.id}
                     src={imagen.url}
                     alt={product.nombre}
-                    className="h-40 w-full rounded object-contain"
+                    className="h-40 md:h-80 w-full rounded object-contain"
                   />
                 ) : null
               })}

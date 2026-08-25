@@ -19,12 +19,12 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="es">
-      <body className="text-slate-900">
+      <body className="text-slate-900 flex min-h-screen flex-col">
         <GoogleTagManagerHead />
         <GoogleTagManagerBody />
         <CartProvider>
           <Navbar />
-          <main className="pt-16">{children}</main>
+          <main className="pt-16 flex-1">{children}</main>
           <Footer />
         </CartProvider>
       </body>
