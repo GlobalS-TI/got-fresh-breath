@@ -23,13 +23,14 @@ export default async function HomePage() {
         </h2>
         <p className="mt-6 text-lg leading-relaxed text-slate-700">
           Corporativos, industrias y hoteles de nivel premium{' '}
-          <span className="font-semibold text-brand-600">confían en nuestro modelo recurrente</span> para{' '}
+          <span className="font-semibold text-brand-600">confían en nuestro modelo recurrente</span>{' '}
+          para{' '}
           <span className="font-semibold text-brand-600">elevar la percepción de su marca</span> y
           transformar el bienestar diario de sus colaboradores.
         </p>
       </section>
 
-      <section className="relative flex h-72 items-center justify-center overflow-hidden bg-gradient-to-b from-brand-200 to-brand-500 text-center text-white/90">
+      <section className="relative flex h-72 items-center justify-center overflow-hidden bg-linear-to-b from-brand-200 to-brand-500 text-center text-white/90">
         <MediaSlot
           media={heroVideo}
           fallbackLabel="Video - el trato al cliente (pendiente del cliente)"

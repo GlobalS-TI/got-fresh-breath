@@ -41,6 +41,9 @@ const nextConfig: NextConfig = {
       {
         pathname: '/logo.png',
       },
+      {
+        pathname: '/logo-global.png',
+      },
     ],
   },
   async headers() {
