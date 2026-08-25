@@ -3,6 +3,7 @@ import type { SVGProps } from 'react'
 import { Mail, MessageCircle } from 'lucide-react'
 
 import { Logo } from '@/components/Logo'
+import { LogoGlobal } from '@/components/GlobalLogo'
 
 function FacebookIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -28,8 +29,8 @@ export function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2 text-white">
           <Logo />
-          <span className="text-brand-200">·</span>
-          <span className="text-sm font-medium text-brand-600">GLOBALsupplier</span>
+          <span className="text-brand-500">-</span>
+          <LogoGlobal />
         </div>
 
         <div className="flex flex-col gap-1.5 text-sm text-brand-600 md:items-end">
