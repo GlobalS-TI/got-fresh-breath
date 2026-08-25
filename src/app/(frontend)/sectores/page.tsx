@@ -28,7 +28,9 @@ export default async function SectoresPage() {
         </div>
       </div>
 
-      <SolucionesGrid />
+      <div className="mx-auto max-w-6xl px-6 py-16">
+        <SolucionesGrid />
+      </div>
 
       <ProgramaSection />
     </>
