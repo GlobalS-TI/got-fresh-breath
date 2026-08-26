@@ -20,8 +20,8 @@ export default async function ContactoPage() {
           Distribución Oficial en todo México y LATAM
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-white/85">
-          Operamos con logística y soporte directo para asegurar que tu programa nunca se detenga, sin
-          importar cuántos puntos de uso requiera tu organización.
+          Operamos con logística y soporte directo para asegurar que tu programa nunca se detenga,
+          sin importar cuántos puntos de uso requiera tu organización.
         </p>
 
         <div className="relative mx-auto mt-12 grid max-w-4xl gap-10 md:grid-cols-[3fr_2fr] md:items-center">
@@ -30,7 +30,7 @@ export default async function ContactoPage() {
               <h2 className="mb-2 text-lg font-semibold">Línea Directa Corporativa</h2>
               <p className="flex items-center gap-2 text-white/90">
                 <Phone className="h-4 w-4 shrink-0" />
-                (81) 1680 9833
+                (81) 1781 0747
               </p>
             </div>
 

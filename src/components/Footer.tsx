@@ -36,14 +36,14 @@ export function Footer() {
         <div className="flex flex-col gap-1.5 text-sm text-brand-600 md:items-end">
           <a
             href="https://wa.me/528117810747"
-            className="flex items-center gap-2 hover:text-white md:flex-row-reverse"
+            className="flex items-center gap-2 md:flex-row-reverse"
           >
             <MessageCircle className="h-4 w-4 shrink-0" />
             (81) 1781 0747
           </a>
           <a
             href="mailto:ventas@gotfreshbreath.mx"
-            className="flex items-center gap-2 hover:text-white md:flex-row-reverse"
+            className="flex items-center gap-2 md:flex-row-reverse"
           >
             <Mail className="h-4 w-4 shrink-0" />
             ventas@gotfreshbreath.mx
@@ -56,7 +56,7 @@ export function Footer() {
           <a
             href="https://www.instagram.com/gotfreshbreath.mx"
             aria-label="Instagram"
-            className="text-brand-600 hover:text-white"
+            className="text-brand-600"
           >
             <InstagramIcon className="h-5 w-5" />
           </a>
