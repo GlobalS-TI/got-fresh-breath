@@ -2,6 +2,7 @@ import React from 'react'
 
 import type { Metadata } from 'next'
 
+import WhatsappButton from '@/components/WhatsappButton'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { CartProvider } from '@/lib/cart-context'
@@ -27,6 +28,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           <main className="pt-16 flex-1">{children}</main>
           <Footer />
         </CartProvider>
+        <WhatsappButton />
       </body>
     </html>
   )
