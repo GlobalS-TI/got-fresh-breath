@@ -1,67 +1,138 @@
-# Payload Blank Template
+# Got Fresh Breath — E-commerce
 
-This template comes configured with the bare minimum to get started on anything you need.
+Sitio web y tienda en línea de Got Fresh Breath (dispensadores y consumibles de aromatización).
+Construido sobre **Payload CMS 3** (admin + API) montado dentro de una sola app de **Next.js 16**
+(App Router), con **Postgres** como base de datos.
 
-## Quick start
+## Stack
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+- **Next.js 16** (App Router) + **React 19**
+- **Payload CMS 3** — admin panel, colecciones, auth, API REST/GraphQL, en el mismo origen que el frontend
+- **Postgres** vía `@payloadcms/db-postgres`
+- **Vercel Blob** para almacenamiento de media (con fallback a disco local si no hay `BLOB_READ_WRITE_TOKEN`)
+- **PayPal** (`@paypal/react-paypal-js`) para checkout
+- **Resend** para notificaciones por correo (nuevos leads/pedidos)
+- **GSAP** para animaciones del frontend
+- **Tailwind CSS 4**
+- **Vitest** (integración) + **Playwright** (e2e)
 
-## Quick Start - local setup
+## Requisitos
 
-To spin up this template locally, follow these steps:
+- Node `^18.20.2` o `>=20.9.0`
+- pnpm `^9 || ^10 || ^11`
+- Postgres (local, Docker, o remoto)
 
-### Clone
+## Setup local
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+1. Clona el repo e instala dependencias:
 
-### Development
+   ```bash
+   pnpm install
+   ```
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+2. Copia las variables de entorno y complétalas (ver detalle abajo):
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+   ```bash
+   cp .env.example .env
+   ```
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+3. Levanta Postgres. La forma más simple es con Docker:
 
-#### Docker (Optional)
+   ```bash
+   docker-compose up -d
+   ```
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+   O apunta `DATABASE_URL` a una instancia propia.
 
-To do so, follow these steps:
+4. Corre las migraciones y levanta el servidor de desarrollo:
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+   ```bash
+   pnpm migrate
+   pnpm dev
+   ```
 
-## How it works
+5. Abre `http://localhost:3000` para el sitio, o `http://localhost:3000/admin` para el panel de
+   Payload. La primera vez, el admin panel te guía para crear el primer usuario **admin**.
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+## Variables de entorno
 
-### Collections
+Ver `.env.example` para el detalle y comentarios de cada una. Resumen:
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+| Variable | Requerida | Descripción |
+| --- | --- | --- |
+| `DATABASE_URL` | Sí | Cadena de conexión a Postgres |
+| `PAYLOAD_SECRET` | Sí | Secreto usado por Payload para firmar sesiones/tokens |
+| `NEXT_PUBLIC_SERVER_URL` | Sí | Origen público del sitio — restringe CORS/CSRF de Payload |
+| `NEXT_PUBLIC_GTM_ID` | No | Contenedor de Google Tag Manager (GA4, Ads, etc.) |
+| `RESEND_API_KEY` | No | Habilita el envío de correos de notificación |
+| `RESEND_FROM_EMAIL` | No | Remitente; por defecto `onboarding@resend.dev` hasta verificar dominio propio |
+| `NOTIFICATION_EMAIL` | No | Correo interno que recibe notificaciones de leads/pedidos |
+| `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` / `NEXT_PUBLIC_PAYPAL_CLIENT_ID` | No | Sin ellas, `/carrito` oculta el botón de PayPal y solo ofrece transferencia/cotización |
+| `PAYPAL_API_BASE` | No | Por defecto sandbox; usar `https://api-m.paypal.com` en producción |
+| `CRM_WEBHOOK_URL` / `CRM_WEBHOOK_SECRET` | No | Notifica nuevos leads a un CRM externo; inactivo si no están configuradas |
+| `BLOB_READ_WRITE_TOKEN` | No | Habilita subida de media a Vercel Blob; sin él, cae a disco local |
 
-- #### Users (Authentication)
+## Scripts disponibles
 
-  Users are auth-enabled collections that have access to the admin panel.
+| Script | Descripción |
+| --- | --- |
+| `pnpm dev` | Servidor de desarrollo |
+| `pnpm devsafe` | `dev` pero borrando `.next` antes (útil si el caché se corrompe) |
+| `pnpm build` | Build de producción |
+| `pnpm start` | Sirve el build de producción |
+| `pnpm lint` | ESLint |
+| `pnpm migrate` | Corre migraciones de Payload contra `DATABASE_URL` |
+| `pnpm generate:types` | Regenera `src/payload-types.ts` a partir de las colecciones/globals |
+| `pnpm generate:importmap` | Regenera el import map del admin panel |
+| `pnpm test:int` | Tests de integración (Vitest) |
+| `pnpm test:e2e` | Tests end-to-end (Playwright) |
+| `pnpm test` | `test:int` + `test:e2e` |
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+## Estructura del proyecto
 
-- #### Media
+```
+src/
+├── app/
+│   ├── (frontend)/        # Rutas públicas del sitio (Next.js App Router)
+│   └── (payload)/         # Admin panel de Payload, montado en /admin
+├── collections/           # Colecciones de Payload (ver abajo)
+├── globals/               # Globals de Payload (contenido único, no listado)
+├── actions/                # Server actions (auth, checkout, paypal, leads)
+├── lib/                    # Utilidades compartidas (payload client, email, pricing, etc.)
+├── components/admin/       # Componentes custom del admin panel
+├── migrations/             # Migraciones de Payload (ver "Migraciones")
+└── payload.config.ts       # Configuración central de Payload
+```
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+### Colecciones
 
-### Docker
+| Colección | Propósito | Notas |
+| --- | --- | --- |
+| `users` | Cuentas de usuario y auth | Roles: `admin`, `empresa`, `distribuidor`, `individual`. Un usuario no-admin no puede auto-asignarse `admin` ni `distribuidor` (ver `enforceDefaultRol` en `Users.ts`) |
+| `products` | Catálogo de la tienda | Categorías `dispensador` / `consumible`; lectura pública, escritura solo admin |
+| `orders` | Pedidos | El estado inicial siempre lo fuerza el servidor (nunca el cliente); soporta compra como invitado vía `accessToken` opaco; envía correos de confirmación al crearse |
+| `leads` | Leads de los formularios del sitio (Sectores, Distribuidor, Contacto, Comodato) | Al crearse notifica por correo y, si está configurado, hace webhook al CRM |
+| `clients` | Logos de clientes mostrados en el sitio | Lectura pública, escritura solo admin |
+| `media` | Archivos subidos (imágenes, PDFs, video) | Sube a Vercel Blob si `BLOB_READ_WRITE_TOKEN` está presente; si no, a disco local |
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+### Globals
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+- **`site-media`** — reemplaza placeholders de fotos/video del sitio desde el admin, por "slot" fijo
+  (la lista de slots vive en `src/lib/siteMediaSlots.ts`, no es editable desde el admin).
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
+## Migraciones
 
-## Questions
+Las migraciones de Payload viven en `src/migrations/`. Se corren automáticamente en CI
+(`.github/workflows/migrate.yml`) cada vez que se hace push a cualquier rama con cambios en
+`src/migrations/**`, contra la base definida en los secrets `DATABASE_URL` / `PAYLOAD_SECRET` del
+repo. Para correrlas localmente: `pnpm migrate`.
 
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+## Tests
+
+- `pnpm test:int` — Vitest, en `tests/int/`
+- `pnpm test:e2e` — Playwright, en `tests/e2e/`
+
+## Despliegue
+
+Next.js estándar (`pnpm build && pnpm start`) o vía Docker (`Dockerfile` / `docker-compose.yml`
+incluidos). Requiere Postgres y las variables de entorno descritas arriba.
