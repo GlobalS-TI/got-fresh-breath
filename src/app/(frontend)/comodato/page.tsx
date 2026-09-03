@@ -1,7 +1,9 @@
 import { LeadForm } from '@/components/LeadForm'
 
 export const metadata = {
-  title: 'Estación en Comodato - Got Fresh Breath',
+  title: 'Renta de Dispensadores de Enjuague Bucal en Comodato - Got Fresh Breath',
+  description:
+    'Cotiza tu estación de enjuague bucal en comodato para hotel, oficina corporativa o coworking: instalación, mantenimiento y reposición de consumibles sin costo inicial de equipo.',
 }
 
 export default function ComodatoPage() {

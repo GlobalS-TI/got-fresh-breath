@@ -1,9 +1,17 @@
+import type { Metadata } from 'next'
+
 import { ClientsWall } from '@/components/ClientsWall'
 import { CorporateReputation } from '@/components/CorporateReputation'
 import { Hero } from '@/components/Hero'
 import { MediaSlot } from '@/components/MediaSlot'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
+
+export const metadata: Metadata = {
+  title: 'Got Fresh Breath | Dispensadores de Enjuague Bucal en Comodato',
+  description:
+    'Servicio todo incluido de dispensadores automáticos de enjuague bucal en comodato para hoteles, oficinas corporativas y coworking. Instalación, mantenimiento y reposición de consumibles sin costo inicial de equipo.',
+}
 
 export default async function HomePage() {
   const [heroVideo, heroProductImage] = await Promise.all([
@@ -22,7 +30,7 @@ export default async function HomePage() {
           El estándar de las empresas que mejor cuidan a su talento.
         </h2>
         <p className="mt-6 text-lg leading-relaxed text-slate-700">
-          Corporativos, industrias y hoteles de nivel premium{' '}
+          Hoteles, oficinas corporativas y espacios de coworking de nivel premium{' '}
           <span className="font-semibold text-brand-600">confían en nuestro modelo recurrente</span>{' '}
           para{' '}
           <span className="font-semibold text-brand-600">elevar la percepción de su marca</span> y

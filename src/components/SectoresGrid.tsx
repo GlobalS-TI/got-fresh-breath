@@ -7,7 +7,7 @@ const SECTORES = [
   {
     value: 'hoteles',
     label: 'Hoteles & Resorts',
-    desc: 'Dispensadores decorativos para destinos internacionales. Protege la experiencia de tus huéspedes en áreas comunes, spas y restaurantes.',
+    desc: 'Amenities premium para hoteles y resorts. Protege la experiencia de tus huéspedes en áreas comunes, spas y restaurantes.',
     cta: 'Elevar Experiencia',
   },
   {
@@ -19,7 +19,7 @@ const SECTORES = [
   {
     value: 'corporativos',
     label: 'Empresarial y Corporativos',
-    desc: 'Cultura de imagen profesional. Seguridad personal e interacciones impecables en oficinas y salas de juntas.',
+    desc: 'Higiene bucal para oficinas corporativas y espacios de coworking. Cultura de imagen profesional e interacciones impecables en salas de juntas.',
     cta: 'Elevar Bienestar Interno',
   },
   {
