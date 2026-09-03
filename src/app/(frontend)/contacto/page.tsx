@@ -1,10 +1,12 @@
 import { Clock, Globe, Mail, MapPin, Phone } from 'lucide-react'
 
+import type { Metadata } from 'next'
+
 import { LeadForm } from '@/components/LeadForm'
 import { VideoPlaceholder } from '@/components/VideoPlaceholder'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Contacto - Got Fresh Breath',
 }
 
@@ -15,7 +17,7 @@ export default async function ContactoPage() {
     <>
       <VideoPlaceholder texto="Video - agua fluyendo (pendiente del cliente)" media={heroVideo} />
 
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-400 to-brand-600 px-6 py-14">
+      <section className="relative overflow-hidden bg-linear-to-b from-brand-400 to-brand-600 px-6 py-14">
         <h1 className="mx-auto max-w-2xl text-center text-2xl font-bold text-white md:text-3xl">
           Distribución Oficial en todo México y LATAM
         </h1>
@@ -30,7 +32,7 @@ export default async function ContactoPage() {
               <h2 className="mb-2 text-lg font-semibold">Línea Directa Corporativa</h2>
               <p className="flex items-center gap-2 text-white/90">
                 <Phone className="h-4 w-4 shrink-0" />
-                (81) 1781 0747
+                (81) 2204 6127
               </p>
             </div>
 
