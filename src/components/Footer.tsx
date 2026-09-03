@@ -35,11 +35,11 @@ export function Footer() {
 
         <div className="flex flex-col gap-1.5 text-sm text-brand-600 md:items-end">
           <a
-            href="https://wa.me/528117810747"
-            className="flex items-center gap-2 md:flex-row-reverse"
+            href="https://wa.me/528122046127"
+            className="flex items-center gap-2 hover:text-white md:flex-row-reverse"
           >
             <MessageCircle className="h-4 w-4 shrink-0" />
-            (81) 1781 0747
+            (81) 2204 6127
           </a>
           <a
             href="mailto:ventas@gotfreshbreath.mx"
