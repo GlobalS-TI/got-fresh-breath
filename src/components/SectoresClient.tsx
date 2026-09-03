@@ -9,9 +9,9 @@ import { MediaSlot } from '@/components/MediaSlot'
 import type { Media } from '@/payload-types'
 
 const SECTORES = [
-  { value: 'hoteles', label: 'Hoteles & Resorts', desc: 'Protege la experiencia de tus huéspedes en áreas comunes, spas y restaurantes.' },
+  { value: 'hoteles', label: 'Hoteles & Resorts', desc: 'Amenities premium para hoteles y resorts. Protege la experiencia de tus huéspedes en áreas comunes, spas y restaurantes.' },
   { value: 'restaurantes', label: 'Restaurantes', desc: 'El toque final de sofisticación para tus clientes y la regla de oro para tu personal de servicio.' },
-  { value: 'corporativos', label: 'Empresarial y Corporativos', desc: 'Cultura de imagen profesional. Seguridad personal e interacciones impecables en oficinas y salas de juntas.' },
+  { value: 'corporativos', label: 'Empresarial y Corporativos', desc: 'Higiene bucal para oficinas corporativas y espacios de coworking. Cultura de imagen profesional e interacciones impecables en salas de juntas.' },
   { value: 'salud', label: 'Salud', desc: 'Entornos de confianza absoluta. El beneficio de cortesía que complementa el cuidado de tus especialistas.' },
   { value: 'comercial', label: 'Comercial', desc: 'Transforma los sanitarios de tu plaza o centro comercial en una extensión de tu experiencia premium.' },
   { value: 'hogar', label: 'Hogar', desc: 'Lleva a tus espacios residenciales un sistema automatizado de frescura premium.' },

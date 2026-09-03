@@ -11,7 +11,7 @@ import './styles.css'
 
 export const metadata: Metadata = {
   description:
-    'Dispensadores automáticos de enjuague bucal para hoteles, restaurantes y corporativos.',
+    'Dispensadores automáticos de enjuague bucal en comodato para hoteles, oficinas corporativas y espacios de coworking. Instalación, mantenimiento y consumibles incluidos.',
   title: 'Got Fresh Breath',
 }
 
