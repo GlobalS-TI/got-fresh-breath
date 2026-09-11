@@ -21,6 +21,7 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlotDef[] = [
   { key: 'programa-integral.operacion-continua', label: 'Nosotros - Foto logística en almacén' },
   { key: 'programa-section.colaboradores', label: 'Sectores - Foto colaboradores en oficina' },
   { key: 'sectores.hoteles', label: 'Sector - Hoteles & Resorts' },
+  { key: 'amenities-hoteles.dispensador-hotel', label: 'Sectores - Foto amenities de hotel (dispensador/enjuague)' },
   { key: 'sectores.restaurantes', label: 'Sector - Restaurantes' },
   { key: 'sectores.corporativos', label: 'Sector - Empresarial y Corporativos' },
   { key: 'sectores.salud', label: 'Sector - Salud' },
