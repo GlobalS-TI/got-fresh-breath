@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react'
 
 import { registerAction, type AuthActionState } from '@/actions/auth'
+import { AvisoPrivacidadNotice } from '@/components/AvisoPrivacidadNotice'
 
 const initialState: AuthActionState = { error: '' }
 
@@ -72,6 +73,7 @@ export function RegisterForm() {
         />
       </label>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      <AvisoPrivacidadNotice />
       <button
         type="submit"
         disabled={isPending}

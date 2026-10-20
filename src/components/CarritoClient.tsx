@@ -7,6 +7,7 @@ import { useActionState, useEffect, useState } from 'react'
 
 import { checkoutAction, type CheckoutState } from '@/actions/checkout'
 import { capturePaypalOrderAction, createPaypalOrderAction } from '@/actions/paypal'
+import { AvisoPrivacidadNotice } from '@/components/AvisoPrivacidadNotice'
 import { useCart } from '@/lib/cart-context'
 import { MAX_DISPENSADORES_INDIVIDUAL } from '@/lib/constants'
 
@@ -182,6 +183,8 @@ export function CarritoClient({ user }: CarritoClientProps) {
         </label>
 
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+
+        <AvisoPrivacidadNotice />
 
         <button
           type="submit"

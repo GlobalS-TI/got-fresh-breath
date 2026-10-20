@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react'
 
 import { submitLeadAction, type LeadActionState } from '@/actions/leads'
+import { AvisoPrivacidadNotice } from '@/components/AvisoPrivacidadNotice'
 import type { Lead } from '@/payload-types'
 
 const initialState: LeadActionState = { error: '', success: false }
@@ -125,6 +126,8 @@ export function LeadForm({ tipo, sectoresSeleccionados }: LeadFormProps) {
 
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
+        <AvisoPrivacidadNotice />
+
         <button
           type="submit"
           disabled={isPending}
@@ -184,6 +187,8 @@ export function LeadForm({ tipo, sectoresSeleccionados }: LeadFormProps) {
       )}
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+
+      <AvisoPrivacidadNotice />
 
       <button
         type="submit"

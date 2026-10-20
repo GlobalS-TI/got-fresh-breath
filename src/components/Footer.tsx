@@ -1,6 +1,7 @@
 import type { SVGProps } from 'react'
 
 import { Mail, MessageCircle } from 'lucide-react'
+import Link from 'next/link'
 
 import { Logo } from '@/components/Logo'
 import { LogoGlobal } from '@/components/GlobalLogo'
@@ -60,6 +61,11 @@ export function Footer() {
           >
             <InstagramIcon className="h-5 w-5" />
           </a>
+        </div>
+        <div className="mt-3 text-center text-xs text-brand-600">
+          <Link href="/aviso-de-privacidad" className="hover:underline">
+            Aviso de Privacidad
+          </Link>
         </div>
       </div>
     </footer>
