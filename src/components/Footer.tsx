@@ -53,7 +53,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-brand-600/50 px-6 py-4">
-        <div className="flex justify-center gap-4">
+        <div className="flex items-center justify-center gap-4">
           <a
             href="https://www.instagram.com/gotfreshbreath.mx"
             aria-label="Instagram"
@@ -61,9 +61,7 @@ export function Footer() {
           >
             <InstagramIcon className="h-5 w-5" />
           </a>
-        </div>
-        <div className="mt-3 text-center text-xs text-brand-600">
-          <Link href="/aviso-de-privacidad" className="hover:underline">
+          <Link href="/aviso-de-privacidad" className="text-xs text-brand-600 hover:underline">
             Aviso de Privacidad
           </Link>
         </div>
