@@ -1,5 +1,7 @@
 import { MediaSlot } from '@/components/MediaSlot'
 import { getPayloadClient } from '@/lib/payload'
+import { imagenPrincipalDeProducto } from '@/lib/producto-imagen'
+import { SLUGS_CONSULTORIOS } from '@/lib/productos-consultorios'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
 
 const FEATURES = [
@@ -29,11 +31,16 @@ export async function ProgramaIntegral() {
   const payload = await getPayloadClient()
   const { docs: consumibles } = await payload.find({
     collection: 'products',
-    where: { activo: { equals: true }, categoria: { equals: 'consumible' } },
+    // Excluye los paquetes de la landing de consultorios: sin esto, el consumible más reciente
+    // (orden por defecto) sería uno de ellos y esta sección perdería la foto del consumible general.
+    where: {
+      activo: { equals: true },
+      categoria: { equals: 'consumible' },
+      slug: { not_in: SLUGS_CONSULTORIOS },
+    },
     limit: 1,
   })
-  const primeraImagen = consumibles[0]?.imagenes?.[0]?.imagen
-  const consumibleImagenUrl = typeof primeraImagen === 'object' ? primeraImagen?.url : null
+  const consumibleImagenUrl = consumibles[0] ? imagenPrincipalDeProducto(consumibles[0]) : null
 
   const features = await Promise.all(
     FEATURES.map(async (feature) => ({ ...feature, media: await getSiteMediaSlot(feature.key) })),

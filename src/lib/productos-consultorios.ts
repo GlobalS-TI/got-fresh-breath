@@ -1,6 +1,6 @@
 // Productos que vende la landing /consultorios. Se crean en la migración
-// 20261021_*_productos_consultorios (que tiene su propia copia de los datos, como toda migración);
-// aquí solo viven los slugs con los que la landing los busca.
+// 20261021_220612_productos_consultorios_imagen_estatica (que tiene su propia copia de los datos,
+// como toda migración); aquí solo viven los slugs con los que la landing los busca.
 
 export type PaqueteConsultorio = 'kit' | 'paquete3' | 'caja6'
 export type ColorDispensador = 'blanco' | 'negro' | 'niquel'

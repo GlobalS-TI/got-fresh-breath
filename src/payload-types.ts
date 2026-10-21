@@ -236,6 +236,10 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Ej: /consultorios/blanco.png. Se usa solo si el producto no tiene imágenes subidas.
+   */
+  imagenEstatica?: string | null;
   fichaTecnica?: (number | null) | Media;
   stock?: number | null;
   activo?: boolean | null;
@@ -511,6 +515,7 @@ export interface ProductsSelect<T extends boolean = true> {
         imagen?: T;
         id?: T;
       };
+  imagenEstatica?: T;
   fichaTecnica?: T;
   stock?: T;
   activo?: T;

@@ -44,6 +44,15 @@ export const Products: CollectionConfig = {
       fields: [{ name: 'imagen', type: 'upload', relationTo: 'media', required: true }],
     },
     {
+      // Para productos cuyas fotos viven en el repo (public/), p. ej. los kits de /consultorios:
+      // se sirven con el deploy y no necesitan storage externo. Solo se usa si no hay imágenes
+      // arriba (ver imagenesDeProducto en src/lib/producto-imagen.ts).
+      name: 'imagenEstatica',
+      type: 'text',
+      label: 'Imagen estática (ruta en /public)',
+      admin: { description: 'Ej: /consultorios/blanco.png. Se usa solo si el producto no tiene imágenes subidas.' },
+    },
+    {
       name: 'fichaTecnica',
       type: 'upload',
       relationTo: 'media',

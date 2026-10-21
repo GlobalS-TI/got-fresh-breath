@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 
 import { AddToCartButtons } from '@/components/AddToCartButtons'
 import { getPayloadClient } from '@/lib/payload'
+import { imagenesDeProducto } from '@/lib/producto-imagen'
 
 function formatPrecio(precio: number) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(precio)
@@ -21,10 +22,9 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
     notFound()
   }
 
-  const imagenes = product.imagenes ?? []
+  const imagenes = imagenesDeProducto(product)
   const fichaTecnica = typeof product.fichaTecnica === 'object' ? product.fichaTecnica : null
-  const primeraImagen = imagenes[0]?.imagen
-  const imagenUrl = typeof primeraImagen === 'object' ? primeraImagen?.url : null
+  const imagenUrl = imagenes[0] ?? null
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
@@ -32,18 +32,15 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
         <div>
           {imagenes.length > 0 ? (
             <div className="grid grid-cols-2 gap-2">
-              {imagenes.map((entry) => {
-                const imagen = typeof entry.imagen === 'object' ? entry.imagen : null
-                return imagen?.url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={entry.id ?? imagen.id}
-                    src={imagen.url}
-                    alt={product.nombre}
-                    className="h-40 md:h-80 w-full rounded object-contain"
-                  />
-                ) : null
-              })}
+              {imagenes.map((url) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={url}
+                  src={url}
+                  alt={product.nombre}
+                  className="h-40 md:h-80 w-full rounded object-contain"
+                />
+              ))}
             </div>
           ) : (
             <div className="flex h-64 items-center justify-center rounded bg-slate-100 text-sm text-slate-400">

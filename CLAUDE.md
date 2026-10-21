@@ -53,8 +53,10 @@ Empieza por `.claude/skills/payload/SKILL.md` para referencia rápida, luego rev
 - **Migraciones**: el workflow `.github/workflows/migrate.yml` es **solo manual**
   (`workflow_dispatch`) — un push nunca migra la base. Después de mergear a `main` una rama con
   migraciones, hay que correr el workflow desde Actions. Las migraciones se crean localmente con la
-  CLI de Payload cuando cambie el schema. Si una migración sube archivos a Media, el workflow
-  necesita el secret `BLOB_READ_WRITE_TOKEN` (sin él los archivos irían al disco del runner; la migración de productos de consultorios los crea sin foto en ese caso).
+  CLI de Payload cuando cambie el schema. Las migraciones no deben subir archivos a Media (en CI
+  irían al disco del runner sin Blob): para fotos que viven en el repo usa el campo
+  `products.imagenEstatica` (ruta en `public/`), y lee las imágenes con `imagenesDeProducto`
+  (`src/lib/producto-imagen.ts`).
   **Nunca correr `pnpm dev` contra la base de producción**: Payload empuja el schema directo y
   deja una marca (`batch = -1` en `payload_migrations`) que bloquea `payload migrate` con un prompt
   interactivo. El workflow tiene la casilla `limpiar_marca_dev_mode` para quitarla. Por lo mismo,
