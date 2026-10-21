@@ -86,12 +86,12 @@ const IMAGENES_DIR = path.resolve(process.cwd(), 'public/consultorios')
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   ALTER TABLE "products" ADD COLUMN "costo_envio" numeric DEFAULT 0 NOT NULL;
-  ALTER TABLE "orders_items" ADD COLUMN "costo_envio_unitario" numeric;
-  ALTER TABLE "orders" ADD COLUMN "subtotal" numeric;
-  ALTER TABLE "orders" ADD COLUMN "envio" numeric;
-  ALTER TABLE "orders" ADD COLUMN "iva" numeric;
-  ALTER TABLE "orders" ADD COLUMN "requiere_factura" boolean DEFAULT false;`)
+   ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "costo_envio" numeric DEFAULT 0 NOT NULL;
+  ALTER TABLE "orders_items" ADD COLUMN IF NOT EXISTS "costo_envio_unitario" numeric;
+  ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "subtotal" numeric;
+  ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "envio" numeric;
+  ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "iva" numeric;
+  ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "requiere_factura" boolean DEFAULT false;`)
 
   // En GitHub Actions sin Vercel Blob, Media escribiría al disco del runner (que se borra al
   // terminar) y los productos quedarían apuntando a imágenes inexistentes. Mejor fallar y que
@@ -157,10 +157,10 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   }
 
   await db.execute(sql`
-   ALTER TABLE "products" DROP COLUMN "costo_envio";
-  ALTER TABLE "orders_items" DROP COLUMN "costo_envio_unitario";
-  ALTER TABLE "orders" DROP COLUMN "subtotal";
-  ALTER TABLE "orders" DROP COLUMN "envio";
-  ALTER TABLE "orders" DROP COLUMN "iva";
-  ALTER TABLE "orders" DROP COLUMN "requiere_factura";`)
+   ALTER TABLE "products" DROP COLUMN IF EXISTS "costo_envio";
+  ALTER TABLE "orders_items" DROP COLUMN IF EXISTS "costo_envio_unitario";
+  ALTER TABLE "orders" DROP COLUMN IF EXISTS "subtotal";
+  ALTER TABLE "orders" DROP COLUMN IF EXISTS "envio";
+  ALTER TABLE "orders" DROP COLUMN IF EXISTS "iva";
+  ALTER TABLE "orders" DROP COLUMN IF EXISTS "requiere_factura";`)
 }
