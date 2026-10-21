@@ -6,16 +6,24 @@ name: Run database migrations
 on:
   workflow_dispatch:
     inputs:
-      aceptar_advertencia_dev:
+      limpiar_marca_dev_mode:
         description: >-
-          Aceptar la advertencia de "dev mode" (la base tuvo cambios empujados por `pnpm dev`).
-          Sin esto, `payload migrate` se queda esperando una respuesta (y/N) que el CI no puede dar.
+          Quitar la marca de "dev mode" (la base tuvo cambios empujados por `pnpm dev`). Sin esto,
+          si la marca existe el job falla en vez de quedarse esperando el (y/N) de Payload.
         type: boolean
         default: false
 
 jobs:
   migrate:
     runs-on: ubuntu-latest
+    # Red de seguridad: si algo vuelve a pedir input interactivo, que no se quede colgado 6 horas.
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      # Las migraciones que suben archivos a Media (p. ej. imágenes de productos) necesitan
+      # Vercel Blob: sin token, Payload escribiría al disco del runner y el archivo se perdería.
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,12 +38,28 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # --force-accept-warning solo descarta la marca de dev mode y corre las migraciones pendientes;
-      # las migraciones del repo están escritas para tolerar columnas que el dev mode ya haya creado.
-      - run: pnpm run migrate ${{ inputs.aceptar_advertencia_dev && '--force-accept-warning' || '' }}
+      # `pnpm dev` deja una fila con batch = -1 en payload_migrations; con ella, `payload migrate`
+      # pregunta (y/N) de forma interactiva — y en esta versión de Payload `migrate` NO acepta
+      # --force-accept-warning. Aceptar ese prompt solo ignora la fila, así que borrarla es
+      # equivalente. Las migraciones del repo usan IF NOT EXISTS para tolerar columnas que el dev
+      # mode ya haya creado.
+      - name: Revisar marca de dev mode
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          # Las migraciones que suben archivos a Media (p. ej. imágenes de productos) necesitan
-          # Vercel Blob: sin token, Payload escribiría al disco del runner y el archivo se perdería.
-          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          LIMPIAR: ${{ inputs.limpiar_marca_dev_mode }}
+        run: |
+          if [ "$(psql "$DATABASE_URL" -tAc "SELECT to_regclass('public.payload_migrations') IS NOT NULL")" != "t" ]; then
+            echo "Base sin tabla payload_migrations todavía; nada que revisar."
+            exit 0
+          fi
+          MARCAS=$(psql "$DATABASE_URL" -tAc "SELECT count(*) FROM payload_migrations WHERE batch = -1")
+          if [ "$MARCAS" = "0" ]; then
+            echo "Sin marca de dev mode."
+          elif [ "$LIMPIAR" = "true" ]; then
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "DELETE FROM payload_migrations WHERE batch = -1"
+            echo "Marca de dev mode eliminada."
+          else
+            echo "::error::La base tiene marca de dev mode (alguien corrió 'pnpm dev' contra ella). Vuelve a correr el workflow marcando 'limpiar_marca_dev_mode'."
+            exit 1
+          fi
+
+      - run: pnpm run migrate
