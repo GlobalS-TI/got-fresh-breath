@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { AddToCartButtons } from '@/components/AddToCartButtons'
 import { MediaSlot } from '@/components/MediaSlot'
 import { getPayloadClient } from '@/lib/payload'
+import { imagenPrincipalDeProducto } from '@/lib/producto-imagen'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
 
 export const metadata = {
@@ -49,8 +50,7 @@ export default async function TiendaPage() {
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((product) => {
-              const primeraImagen = product.imagenes?.[0]?.imagen
-              const imagenUrl = typeof primeraImagen === 'object' ? primeraImagen?.url : null
+              const imagenUrl = imagenPrincipalDeProducto(product)
               const fichaTecnica =
                 typeof product.fichaTecnica === 'object' ? product.fichaTecnica : null
 

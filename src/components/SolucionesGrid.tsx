@@ -1,12 +1,16 @@
 import Link from 'next/link'
 
 import { getPayloadClient } from '@/lib/payload'
+import { imagenPrincipalDeProducto } from '@/lib/producto-imagen'
+import { SLUGS_CONSULTORIOS } from '@/lib/productos-consultorios'
 
 export async function SolucionesGrid() {
   const payload = await getPayloadClient()
   const { docs: products } = await payload.find({
     collection: 'products',
-    where: { activo: { equals: true } },
+    // Los kits/paquetes de la landing de consultorios no son "soluciones" del catálogo general
+    // y desplazarían a los dispensadores de esta sección (va ordenada por nombre, límite 4).
+    where: { activo: { equals: true }, slug: { not_in: SLUGS_CONSULTORIOS } },
     sort: 'nombre',
     limit: 4,
   })
@@ -19,8 +23,7 @@ export async function SolucionesGrid() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((product) => {
-          const primeraImagen = product.imagenes?.[0]?.imagen
-          const imagenUrl = typeof primeraImagen === 'object' ? primeraImagen?.url : null
+          const imagenUrl = imagenPrincipalDeProducto(product)
 
           return (
             <div key={product.id} className="flex flex-col">
