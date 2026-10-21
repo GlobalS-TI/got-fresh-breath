@@ -52,7 +52,8 @@ async function seedProducts() {
 
     await payload.create({
       collection: 'products',
-      data: product,
+      // costoEnvio: mismo default que la migración aplica a productos existentes; se ajusta en el admin.
+      data: { costoEnvio: 0, ...product },
     })
 
     console.log(`Seeded: ${product.nombre}`)

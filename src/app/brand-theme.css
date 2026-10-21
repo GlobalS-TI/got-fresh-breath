@@ -1,0 +1,16 @@
+/* Colores de marca para Tailwind. Compartido por los layouts (frontend) y (landing) para que
+   componentes como CheckoutForm se vean igual en ambos. */
+@theme {
+  --color-brand-50: #eaf6fc;
+  --color-brand-100: #cdeaf6;
+  --color-brand-200: #a3d9ee;
+  --color-brand-300: #74c3e3;
+  --color-brand-400: #4aa8d1;
+  --color-brand-500: #2f8bbd;
+  --color-brand-600: #256f9c;
+  --color-brand-700: #1f587c;
+  --color-brand-800: #1c4763;
+  --color-brand-900: #1a3a51;
+
+  --color-slate-band: #5c7a8a;
+}

@@ -225,6 +225,10 @@ export interface Product {
   descripcion: string;
   descripcionCorta?: string | null;
   precio: number;
+  /**
+   * Se cobra por cada unidad del producto en el pedido. El IVA se suma en el checkout.
+   */
+  costoEnvio: number;
   categoria: 'dispensador' | 'consumible';
   imagenes?:
     | {
@@ -254,9 +258,17 @@ export interface Order {
     producto: number | Product;
     cantidad: number;
     precioUnitario: number;
+    costoEnvioUnitario?: number | null;
     id?: string | null;
   }[];
+  subtotal?: number | null;
+  envio?: number | null;
+  iva?: number | null;
   total: number;
+  /**
+   * Los datos fiscales están en el perfil del cliente (Usuarios → Datos fiscales).
+   */
+  requiereFactura?: boolean | null;
   estado: 'pendiente' | 'pagado' | 'en_proceso' | 'enviado' | 'entregado' | 'cancelado';
   metodoPago?: ('paypal' | 'transferencia' | 'cotizacion') | null;
   paypalOrderId?: string | null;
@@ -491,6 +503,7 @@ export interface ProductsSelect<T extends boolean = true> {
   descripcion?: T;
   descripcionCorta?: T;
   precio?: T;
+  costoEnvio?: T;
   categoria?: T;
   imagenes?:
     | T
@@ -518,9 +531,14 @@ export interface OrdersSelect<T extends boolean = true> {
         producto?: T;
         cantidad?: T;
         precioUnitario?: T;
+        costoEnvioUnitario?: T;
         id?: T;
       };
+  subtotal?: T;
+  envio?: T;
+  iva?: T;
   total?: T;
+  requiereFactura?: T;
   estado?: T;
   metodoPago?: T;
   paypalOrderId?: T;

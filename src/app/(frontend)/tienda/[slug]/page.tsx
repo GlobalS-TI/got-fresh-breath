@@ -55,7 +55,10 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
         <div>
           <h1 className="text-3xl font-bold text-slate-900">{product.nombre}</h1>
           <p className="mt-4 whitespace-pre-line text-slate-700">{product.descripcion}</p>
-          <p className="mt-6 text-2xl font-bold text-brand-700">{formatPrecio(product.precio)}</p>
+          <p className="mt-6 text-2xl font-bold text-brand-700">
+            {formatPrecio(product.precio)}
+            <span className="text-sm font-medium text-slate-500"> + IVA</span>
+          </p>
 
           <div className="mt-6">
             <AddToCartButtons
@@ -63,6 +66,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
               slug={product.slug}
               nombre={product.nombre}
               precio={product.precio}
+              costoEnvio={product.costoEnvio ?? 0}
               categoria={product.categoria}
               imagenUrl={imagenUrl}
               showQuantity

@@ -6,15 +6,20 @@ const labelClass = 'flex flex-col gap-1 text-sm font-medium text-slate-700'
 
 type DatosFiscalesFieldsProps = {
   defaults?: DatosFiscales | null
+  // En el checkout, cuando el cliente marca "Requiero factura", se muestran abiertos y obligatorios.
+  enCheckout?: boolean
 }
 
-// Campos de datos fiscales compartidos entre el registro y la edición de perfil en /cuenta.
-// Son opcionales — van dentro de un <details> para no alargar el formulario a quien no factura.
-export function DatosFiscalesFields({ defaults }: DatosFiscalesFieldsProps) {
+// Campos de datos fiscales compartidos entre el registro, la edición de perfil en /cuenta y el
+// checkout. Fuera del checkout son opcionales — van dentro de un <details> para no alargar el
+// formulario a quien no factura.
+export function DatosFiscalesFields({ defaults, enCheckout = false }: DatosFiscalesFieldsProps) {
   return (
-    <details open={Boolean(defaults?.rfc)} className="rounded-md border border-slate-200 p-4">
+    <details open={enCheckout || Boolean(defaults?.rfc)} className="rounded-md border border-slate-200 p-4">
       <summary className="cursor-pointer text-sm font-semibold text-slate-900">
-        Datos fiscales (opcional, solo si requieres factura)
+        {enCheckout
+          ? 'Datos fiscales para tu factura (se guardan en tu cuenta)'
+          : 'Datos fiscales (opcional, solo si requieres factura)'}
       </summary>
       <div className="mt-4 flex flex-col gap-4">
         <label className={labelClass}>

@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 
-import { PedidoForm } from './PedidoForm'
+import { toCheckoutUser } from '@/lib/checkout-user'
+import { getPayloadClient } from '@/lib/payload'
+import { esColor, esPaquete, SLUGS_CONSULTORIOS } from '@/lib/productos-consultorios'
+import { getSession } from '@/lib/session'
+
+import { PedidoForm, type ProductoLanding } from './PedidoForm'
 import styles from './consultorios.module.css'
 
 export const metadata: Metadata = {
@@ -11,6 +17,10 @@ export const metadata: Metadata = {
 }
 
 const WHATSAPP_URL = 'https://wa.me/528135798655'
+// La suscripción todavía no se cobra en línea (requiere PayPal Subscriptions) — se atiende por WhatsApp.
+const WHATSAPP_SUSCRIPCION_URL = `${WHATSAPP_URL}?text=${encodeURIComponent(
+  'Hola, me interesa la suscripción de Got Fresh Breath: una caja de 6 botellas cada 2 o 3 meses.',
+)}`
 
 // TODO: reemplazar por los días hábiles reales de entrega antes de publicar.
 const DIAS_ENTREGA = '[N]'
@@ -76,7 +86,8 @@ const preguntas = [
   },
   {
     pregunta: '¿Facturan?',
-    respuesta: 'Sí. Indícalo en el pedido y te pedimos tus datos fiscales por WhatsApp.',
+    respuesta:
+      'Sí. Marca «Requiero factura» al hacer tu pedido y captura tus datos fiscales; se guardan en tu cuenta para los siguientes pedidos.',
   },
 ]
 
@@ -89,7 +100,41 @@ function Precio({ monto }: { monto: string }) {
   )
 }
 
-export default function ConsultoriosPage() {
+async function getProductosLanding(): Promise<ProductoLanding[]> {
+  const payload = await getPayloadClient()
+  const { docs } = await payload.find({
+    collection: 'products',
+    where: { slug: { in: SLUGS_CONSULTORIOS }, activo: { equals: true } },
+    limit: SLUGS_CONSULTORIOS.length,
+    depth: 0,
+  })
+  return docs.map((p) => ({
+    productId: p.id,
+    slug: p.slug,
+    nombre: p.nombre,
+    precio: p.precio,
+    costoEnvio: p.costoEnvio ?? 0,
+    categoria: p.categoria,
+  }))
+}
+
+export default async function ConsultoriosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ paquete?: string; color?: string; cantidad?: string }>
+}) {
+  const params = await searchParams
+  const [user, productos] = await Promise.all([getSession(), getProductosLanding()])
+
+  // Selección inicial desde la URL: la usan los botones "Pedir ..." de las tarjetas y el regreso
+  // después de iniciar sesión / crear cuenta.
+  const cantidadParam = Math.floor(Number(params.cantidad))
+  const inicial = {
+    paquete: esPaquete(params.paquete) ? params.paquete : ('kit' as const),
+    color: esColor(params.color) ? params.color : ('blanco' as const),
+    cantidad: cantidadParam >= 1 && cantidadParam <= 99 ? cantidadParam : 1,
+  }
+
   return (
     <div className={styles.pagina}>
       <header className={styles.header}>
@@ -176,9 +221,9 @@ export default function ConsultoriosPage() {
                 <li>300 vasos individuales</li>
                 <li>Envío: $125 + IVA</li>
               </ul>
-              <a href="#pedido" className={`${styles.boton} ${styles.botonTarjeta}`}>
+              <Link href="?paquete=kit#pedido" className={`${styles.boton} ${styles.botonTarjeta}`}>
                 Pedir kit
-              </a>
+              </Link>
             </div>
 
             <div className={styles.tarjeta}>
@@ -191,9 +236,12 @@ export default function ConsultoriosPage() {
                 <li>$330 por botella</li>
                 <li>Envío: $125 + IVA por paquete</li>
               </ul>
-              <a href="#pedido" className={`${styles.botonContorno} ${styles.botonTarjeta}`}>
+              <Link
+                href="?paquete=paquete3#pedido"
+                className={`${styles.botonContorno} ${styles.botonTarjeta}`}
+              >
                 Pedir recarga
-              </a>
+              </Link>
             </div>
 
             <div className={`${styles.tarjeta} ${styles.tarjetaDestacada}`}>
@@ -206,9 +254,9 @@ export default function ConsultoriosPage() {
                 <li>$292 por botella</li>
                 <li>Envío: $170 + IVA por caja</li>
               </ul>
-              <a href="#pedido" className={`${styles.boton} ${styles.botonTarjeta}`}>
+              <Link href="?paquete=caja6#pedido" className={`${styles.boton} ${styles.botonTarjeta}`}>
                 Pedir caja
-              </a>
+              </Link>
             </div>
           </div>
           <div className={styles.aviso}>
@@ -225,7 +273,7 @@ export default function ConsultoriosPage() {
                 cuando quieras.
               </div>
             </div>
-            <a href="#pedido" className={styles.botonClaro}>
+            <a href={WHATSAPP_SUSCRIPCION_URL} className={styles.botonClaro}>
               Suscribirme
             </a>
           </div>
@@ -290,11 +338,19 @@ export default function ConsultoriosPage() {
           <div className={styles.pedidoTexto}>
             <h2 className={styles.h2}>Haz tu pedido</h2>
             <p className={styles.pedidoLead}>
-              Te confirmamos el total con envío y los datos de pago por WhatsApp en menos de un día
-              hábil.
+              Elige tu paquete y paga en línea con PayPal o tarjeta, o solicita transferencia o
+              cotización. Necesitas una cuenta para hacer tu pedido.
             </p>
           </div>
-          <PedidoForm />
+          {/* key: los botones "Pedir ..." cambian la selección vía URL — remonta el formulario
+              para que tome la nueva selección inicial. */}
+          <PedidoForm
+            key={`${inicial.paquete}-${inicial.color}-${inicial.cantidad}`}
+            user={toCheckoutUser(user)}
+            productos={productos}
+            inicial={inicial}
+            whatsappUrl={WHATSAPP_URL}
+          />
         </div>
       </section>
 

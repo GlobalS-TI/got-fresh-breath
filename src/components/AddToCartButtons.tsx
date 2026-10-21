@@ -10,6 +10,7 @@ type AddToCartButtonsProps = {
   slug: string
   nombre: string
   precio: number
+  costoEnvio: number
   categoria: 'dispensador' | 'consumible'
   imagenUrl?: string | null
   showQuantity?: boolean
@@ -22,6 +23,7 @@ export function AddToCartButtons({
   slug,
   nombre,
   precio,
+  costoEnvio,
   categoria,
   imagenUrl,
   showQuantity = false,
@@ -32,13 +34,13 @@ export function AddToCartButtons({
   const router = useRouter()
 
   function handleAdd() {
-    addItem({ productId, slug, nombre, precio, categoria, imagenUrl }, cantidad)
+    addItem({ productId, slug, nombre, precio, costoEnvio, categoria, imagenUrl }, cantidad)
     setAdded(true)
     setTimeout(() => setAdded(false), 1500)
   }
 
   function handleBuyNow() {
-    addItem({ productId, slug, nombre, precio, categoria, imagenUrl }, cantidad)
+    addItem({ productId, slug, nombre, precio, costoEnvio, categoria, imagenUrl }, cantidad)
     router.push('/carrito')
   }
 
