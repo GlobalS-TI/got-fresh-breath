@@ -448,15 +448,8 @@
   color: #45535e;
 }
 
-.pedidoColumna {
-  flex: 999 1 560px;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .formulario {
+  flex: 999 1 560px;
   min-width: 0;
   background: #ffffff;
   display: grid;
@@ -488,12 +481,126 @@
   background: #ffffff;
 }
 
-/* El CheckoutForm compartido trae sus propias tarjetas (Tailwind); aquí solo se le da el fondo
-   blanco para que resalte sobre el fondo suave de la sección. */
-.checkout {
-  background: #ffffff;
-  border-radius: 8px;
+/* Datos que vienen de la cuenta del cliente: se muestran pero se editan en "Mi cuenta". */
+.control[readonly] {
+  background: #f2f6fa;
+  color: #45535e;
+}
+
+/* Elementos que ocupan todo el ancho de la rejilla del formulario. */
+.ancho {
+  grid-column: 1 / -1;
+}
+
+.nota {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #45535e;
+}
+
+.subtituloFormulario {
+  grid-column: 1 / -1;
+  margin: 8px 0 0;
   font-size: 15px;
+  font-weight: 700;
+  color: #1e2a33;
+}
+
+.resumen {
+  grid-column: 1 / -1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f2f6fa;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 15px;
+  color: #45535e;
+}
+
+.resumen div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.resumen dd {
+  margin: 0;
+}
+
+.resumen .resumenTotal {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid #d8e3ee;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e2a33;
+}
+
+.error {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 14px;
+  color: #b42318;
+}
+
+.aviso {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: #fff7e6;
+  color: #7a4b00;
+  font-size: 14px;
+}
+
+.enviar {
+  grid-column: 1 / -1;
+  font: inherit;
+  background: #1f5f99;
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  font-size: 17px;
+  padding: 16px;
+  border-radius: 6px;
+  min-height: 52px;
+  cursor: pointer;
+}
+
+.enviar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.acciones > * {
+  flex: 1 1 200px;
+  padding: 14px 20px;
+}
+
+.paypal {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid #e3e9ef;
+}
+
+.paypalTexto {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  color: #45535e;
 }
 
 /* Preguntas */

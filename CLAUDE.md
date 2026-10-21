@@ -34,10 +34,12 @@ Empieza por `.claude/skills/payload/SKILL.md` para referencia rápida, luego rev
   IVA**. El total de un pedido (productos + envío + 16% de IVA) se calcula únicamente con
   `calcularTotales` (`src/lib/precios.ts`), que usan tanto `resolveCartItems` en el servidor como la
   UI del checkout — no recalcular totales por otro lado.
-- **Un solo checkout**: `CheckoutForm` (`src/components/CheckoutForm.tsx`) es el checkout del sitio;
-  lo usan `/carrito` y la landing `/consultorios`. Landings nuevas deben reutilizarlo, no crear otro.
-  Antes de capturar un pago, `capturePaypalOrderAction` verifica que el monto de la orden de PayPal
-  sea igual al total recalculado.
+- **Un solo checkout (lógica)**: todo pedido se crea con `checkoutAction` / los actions de PayPal,
+  con `PaypalCheckout` (`src/components/PaypalCheckout.tsx`) para los botones y `calcularTotales`
+  para el desglose. La presentación puede variar: `/carrito` usa `CheckoutForm` y la landing
+  `/consultorios` su propio formulario (`PedidoForm`) con el diseño de la landing. Landings nuevas
+  pueden tener su UI, pero nunca su propia lógica de pedido/cobro. Antes de capturar un pago,
+  `capturePaypalOrderAction` verifica que el monto de la orden de PayPal sea igual al total.
 - **Server actions** (`src/actions/`) son la puerta de entrada para mutaciones desde el frontend
   (login/registro, checkout, captura de PayPal, envío de leads) — el admin panel usa la Local API
   de Payload directamente. `checkRateLimit` (`src/lib/rate-limit.ts`) protege endpoints sensibles

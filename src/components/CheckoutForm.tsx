@@ -1,21 +1,18 @@
 'use client'
 
-import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useActionState, useEffect, useRef, useState } from 'react'
+import { useActionState, useEffect, useMemo, useRef, useState } from 'react'
 
 import { checkoutAction, type CheckoutState } from '@/actions/checkout'
-import { capturePaypalOrderAction, createPaypalOrderAction } from '@/actions/paypal'
 import { AvisoPrivacidadNotice } from '@/components/AvisoPrivacidadNotice'
 import { DatosFiscalesFields } from '@/components/DatosFiscalesFields'
+import { type Direccion, PaypalCheckout } from '@/components/PaypalCheckout'
 import type { CheckoutUser } from '@/lib/checkout-user'
 import { MAX_DISPENSADORES_INDIVIDUAL } from '@/lib/constants'
 import { calcularTotales, formatPrecio } from '@/lib/precios'
 
 const initialState: CheckoutState = {}
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
-const CAMPOS_FISCALES = ['rfc', 'razonSocial', 'regimenFiscal', 'usoCfdi', 'cpFiscal'] as const
 
 export type LineaCheckout = {
   productId: number
@@ -35,19 +32,22 @@ type CheckoutFormProps = {
   onPedidoCreado?: () => void
 }
 
-// Checkout único del sitio: lo usan /carrito (con los items del carrito) y la landing
-// /consultorios (con el paquete elegido). Toda la validación y el cálculo real ocurren en los
-// server actions — aquí solo se muestra el desglose con la misma función (calcularTotales).
+// Checkout de /carrito. La landing /consultorios tiene su propio formulario con el diseño de la
+// landing, pero ambos usan los mismos server actions (checkoutAction / PayPal), el mismo
+// PaypalCheckout y la misma función de totales (calcularTotales): solo cambia la presentación.
 export function CheckoutForm({ user, lineas, redirectPath, onPedidoCreado }: CheckoutFormProps) {
   const [state, formAction, pending] = useActionState(checkoutAction, initialState)
-  const [paypalError, setPaypalError] = useState('')
-  const [direccion, setDireccion] = useState({ calle: '', ciudad: '', estadoDireccion: '', cp: '' })
+  const [direccion, setDireccion] = useState<Direccion>({ calle: '', ciudad: '', estadoDireccion: '', cp: '' })
   const [requiereFactura, setRequiereFactura] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
 
   const totales = calcularTotales(lineas)
-  const itemsInput = lineas.map((l) => ({ productId: l.productId, cantidad: l.cantidad }))
+  // Referencia estable: PaypalCheckout la usa en forceReRender de los botones de PayPal.
+  const itemsInput = useMemo(
+    () => lineas.map((l) => ({ productId: l.productId, cantidad: l.cantidad })),
+    [lineas],
+  )
 
   const rol = user?.rol ?? 'individual'
   const dispensadores = lineas
@@ -55,11 +55,6 @@ export function CheckoutForm({ user, lineas, redirectPath, onPedidoCreado }: Che
     .reduce((sum, l) => sum + l.cantidad, 0)
   const excedeLimite =
     rol !== 'empresa' && rol !== 'distribuidor' && dispensadores > MAX_DISPENSADORES_INDIVIDUAL
-  const direccionIncompleta =
-    !direccion.calle.trim() ||
-    !direccion.ciudad.trim() ||
-    !direccion.estadoDireccion.trim() ||
-    !direccion.cp.trim()
   const pideDatosFiscales = requiereFactura && !user?.rfcFacturacion
 
   useEffect(() => {
@@ -69,16 +64,6 @@ export function CheckoutForm({ user, lineas, redirectPath, onPedidoCreado }: Che
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
-
-  // PayPal no envía el <form>, así que los datos fiscales se leen del formulario al momento.
-  function facturaArgs() {
-    if (!requiereFactura) return { requiereFactura: false }
-    const datos = new FormData(formRef.current ?? undefined)
-    return {
-      requiereFactura: true,
-      datosFiscales: Object.fromEntries(CAMPOS_FISCALES.map((c) => [c, String(datos.get(c) ?? '')])),
-    }
-  }
 
   const authQuery = `?redirect=${encodeURIComponent(redirectPath)}`
 
@@ -229,51 +214,19 @@ export function CheckoutForm({ user, lineas, redirectPath, onPedidoCreado }: Che
           </form>
 
           <div className="rounded-lg border border-slate-200 p-6">
-            {PAYPAL_CLIENT_ID ? (
-              <>
-                <p className="mb-3 text-center text-sm font-medium text-slate-700">
-                  O paga ahora con PayPal o tarjeta
-                </p>
-                {direccionIncompleta && (
-                  <p className="mb-3 text-center text-sm text-slate-500">
-                    Completa calle, ciudad, estado y código postal arriba para pagar con PayPal.
-                  </p>
-                )}
-                <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: 'MXN' }}>
-                  <PayPalButtons
-                    disabled={excedeLimite || direccionIncompleta}
-                    forceReRender={[lineas, direccion, requiereFactura]}
-                    createOrder={async () => {
-                      setPaypalError('')
-                      const result = await createPaypalOrderAction(itemsInput, facturaArgs())
-                      if (result.error || !result.paypalOrderId) {
-                        setPaypalError(result.error ?? 'No se pudo iniciar el pago con PayPal.')
-                        throw new Error(result.error ?? 'No se pudo iniciar el pago con PayPal.')
-                      }
-                      return result.paypalOrderId
-                    }}
-                    onApprove={async (data) => {
-                      const result = await capturePaypalOrderAction({
-                        paypalOrderId: data.orderID,
-                        items: itemsInput,
-                        direccionEnvio: direccion,
-                        ...facturaArgs(),
-                      })
-                      if (result.success && result.orderId) {
-                        onPedidoCreado?.()
-                        router.push(`/pedido/${result.orderId}`)
-                      } else {
-                        setPaypalError(result.error ?? 'No se pudo confirmar tu pedido.')
-                      }
-                    }}
-                    onError={() => setPaypalError('Ocurrió un error con PayPal. Intenta de nuevo.')}
-                  />
-                </PayPalScriptProvider>
-                {paypalError && <p className="mt-3 text-sm text-red-600">{paypalError}</p>}
-              </>
-            ) : (
-              <p className="text-center text-sm text-slate-400">PayPal (próximamente)</p>
-            )}
+            <PaypalCheckout
+              items={itemsInput}
+              direccion={direccion}
+              requiereFactura={requiereFactura}
+              formRef={formRef}
+              disabled={excedeLimite}
+              onPedidoCreado={onPedidoCreado}
+              className={{
+                titulo: "mb-3 text-center text-sm font-medium text-slate-700",
+                aviso: "mb-3 text-center text-sm text-slate-500",
+                error: "mt-3 text-sm text-red-600",
+              }}
+            />
           </div>
         </>
       )}
