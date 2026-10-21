@@ -88,6 +88,23 @@ export default async function PedidoPage({
         })}
       </div>
 
+      {/* Los pedidos anteriores al desglose de envío/IVA solo tienen `total`. */}
+      {typeof order.subtotal === 'number' && (
+        <dl className="mb-2 ml-auto flex max-w-xs flex-col gap-1 text-sm text-slate-700">
+          <div className="flex justify-between">
+            <dt>Productos</dt>
+            <dd>{formatPrecio(order.subtotal)}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt>Envío</dt>
+            <dd>{formatPrecio(order.envio ?? 0)}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt>IVA</dt>
+            <dd>{formatPrecio(order.iva ?? 0)}</dd>
+          </div>
+        </dl>
+      )}
       <p className="mb-8 text-right text-xl font-bold text-slate-900">Total: {formatPrecio(order.total)}</p>
 
       <div className="mb-8 rounded-lg border border-slate-200 p-6 text-sm text-slate-700">
@@ -95,6 +112,12 @@ export default async function PedidoPage({
           <span className="font-semibold">Método de pago: </span>
           {order.metodoPago ? METODO_PAGO_LABELS[order.metodoPago] : 'Por definir'}
         </p>
+        {order.requiereFactura && (
+          <p className="mb-2">
+            <span className="font-semibold">Factura: </span>
+            Sí, con los datos fiscales de tu cuenta.
+          </p>
+        )}
         {order.metodoPago === 'cotizacion' && (
           <p className="text-slate-600">Nuestro equipo se pondrá en contacto contigo para confirmar el pago.</p>
         )}

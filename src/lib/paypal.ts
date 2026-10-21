@@ -67,10 +67,29 @@ export async function createPaypalOrder(totalMXN: number): Promise<string> {
   return data.id
 }
 
+// Monto con el que se creó la orden en PayPal. Se compara contra el total recalculado antes de
+// capturar: sin esto, alguien podría crear la orden con un carrito barato y luego capturarla
+// mandando otros items, y el pedido quedaría "pagado" por un monto menor al real.
+export async function getPaypalOrderAmount(paypalOrderId: string): Promise<{ value: string; currency: string }> {
+  const accessToken = await getAccessToken()
+
+  const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${encodeURIComponent(paypalOrderId)}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (!res.ok) {
+    throw new Error(`No se pudo consultar la orden de PayPal (${res.status}).`)
+  }
+
+  const data = await res.json()
+  const amount = data.purchase_units?.[0]?.amount
+  return { value: String(amount?.value ?? ''), currency: String(amount?.currency_code ?? '') }
+}
+
 export async function capturePaypalOrder(paypalOrderId: string): Promise<{ status: string }> {
   const accessToken = await getAccessToken()
 
-  const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${paypalOrderId}/capture`, {
+  const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${encodeURIComponent(paypalOrderId)}/capture`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,

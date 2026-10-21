@@ -1,120 +1,118 @@
 'use client'
 
-import type { FormEvent } from 'react'
+import { useMemo, useState } from 'react'
+
+import { CheckoutForm, type LineaCheckout } from '@/components/CheckoutForm'
+import type { CheckoutUser } from '@/lib/checkout-user'
+import {
+  type ColorDispensador,
+  type PaqueteConsultorio,
+  slugDePaquete,
+} from '@/lib/productos-consultorios'
 
 import styles from './consultorios.module.css'
 
-const WHATSAPP = '528135798655'
+export type ProductoLanding = Omit<LineaCheckout, 'cantidad'> & { slug: string }
 
-// El formulario no pasa por el servidor: arma el mensaje del pedido y abre WhatsApp con él.
-// El utm_source se incluye como "Origen" para saber de qué campaña llegó el pedido.
-export function PedidoForm() {
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const datos = new FormData(e.currentTarget)
-    const valor = (campo: string) => String(datos.get(campo) ?? '').trim()
+type PedidoFormProps = {
+  user: CheckoutUser | null
+  productos: ProductoLanding[]
+  inicial: { paquete: PaqueteConsultorio; color: ColorDispensador; cantidad: number }
+  whatsappUrl: string
+}
 
-    const mensaje = [
-      'Hola, quiero hacer un pedido de Got Fresh Breath.',
-      '',
-      `Nombre: ${valor('nombre')}`,
-      `Consultorio: ${valor('consultorio')}`,
-      `WhatsApp: ${valor('whatsapp')}`,
-      `Correo: ${valor('correo')}`,
-      `CP: ${valor('cp')}`,
-      `Paquete: ${valor('paquete')}`,
-      `Color: ${valor('color')}`,
-      `Cantidad: ${valor('cantidad')}`,
-      `Factura: ${valor('factura')}`,
-      `Origen: ${new URLSearchParams(window.location.search).get('utm_source') || 'web'}`,
-    ].join('\n')
+const MAX_CANTIDAD = 99
 
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`, '_blank')
+// El cliente elige paquete/color/cantidad y paga con el mismo CheckoutForm de /carrito — no hay
+// checkout aparte para la landing. La selección viaja en el ?redirect de login/registro para que
+// el cliente regrese con el mismo paquete elegido.
+export function PedidoForm({ user, productos, inicial, whatsappUrl }: PedidoFormProps) {
+  const [paquete, setPaquete] = useState<PaqueteConsultorio>(inicial.paquete)
+  const [color, setColor] = useState<ColorDispensador>(inicial.color)
+  const [cantidad, setCantidad] = useState(inicial.cantidad)
+
+  const producto = productos.find((p) => p.slug === slugDePaquete(paquete, color))
+  // Referencia estable: CheckoutForm la usa en forceReRender de los botones de PayPal.
+  const lineas = useMemo(() => (producto ? [{ ...producto, cantidad }] : []), [producto, cantidad])
+
+  if (productos.length === 0) {
+    return (
+      <div className={styles.formulario}>
+        <p className={styles.pedidoLead}>
+          Por el momento no podemos tomar pedidos en línea. Escríbenos por{' '}
+          <a href={whatsappUrl}>WhatsApp</a> y con gusto te atendemos.
+        </p>
+      </div>
+    )
   }
 
+  const redirectPath = `/consultorios?${new URLSearchParams({
+    paquete,
+    color,
+    cantidad: String(cantidad),
+  })}#pedido`
+
   return (
-    <form className={styles.formulario} onSubmit={handleSubmit}>
-      <div className={styles.campo}>
-        <label htmlFor="nombre" className={styles.etiqueta}>
-          Nombre
-        </label>
-        <input id="nombre" name="nombre" type="text" placeholder="Dra. Ana López" className={styles.control} />
+    <div className={styles.pedidoColumna}>
+      <div className={styles.formulario}>
+        <div className={styles.campo}>
+          <label htmlFor="paquete" className={styles.etiqueta}>
+            Paquete
+          </label>
+          <select
+            id="paquete"
+            value={paquete}
+            onChange={(e) => setPaquete(e.target.value as PaqueteConsultorio)}
+            className={styles.control}
+          >
+            <option value="kit">Kit de inicio</option>
+            <option value="paquete3">Paquete de 3 botellas</option>
+            <option value="caja6">Caja completa (6 botellas)</option>
+          </select>
+        </div>
+        {paquete === 'kit' && (
+          <div className={styles.campo}>
+            <label htmlFor="color" className={styles.etiqueta}>
+              Color del dispensador
+            </label>
+            <select
+              id="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value as ColorDispensador)}
+              className={styles.control}
+            >
+              <option value="blanco">Blanco</option>
+              <option value="negro">Negro</option>
+              <option value="niquel">Níquel (+$200)</option>
+            </select>
+          </div>
+        )}
+        <div className={styles.campo}>
+          <label htmlFor="cantidad" className={styles.etiqueta}>
+            Cantidad
+          </label>
+          <input
+            id="cantidad"
+            type="number"
+            min={1}
+            max={MAX_CANTIDAD}
+            value={cantidad}
+            onChange={(e) => setCantidad(Math.min(Math.max(1, Math.floor(Number(e.target.value)) || 1), MAX_CANTIDAD))}
+            className={styles.control}
+          />
+        </div>
       </div>
-      <div className={styles.campo}>
-        <label htmlFor="consultorio" className={styles.etiqueta}>
-          Nombre del consultorio
-        </label>
-        <input
-          id="consultorio"
-          name="consultorio"
-          type="text"
-          placeholder="Clínica Dental Sonrisa"
-          className={styles.control}
-        />
+
+      <div className={`${styles.checkout} gfb-checkout`}>
+        {producto ? (
+          <CheckoutForm user={user} lineas={lineas} redirectPath={redirectPath} />
+        ) : (
+          <p className={styles.pedidoLead}>
+            Este paquete no está disponible por el momento. Escríbenos por{' '}
+            <a href={whatsappUrl}>WhatsApp</a>.
+          </p>
+        )}
       </div>
-      <div className={styles.campo}>
-        <label htmlFor="whatsapp" className={styles.etiqueta}>
-          WhatsApp
-        </label>
-        <input id="whatsapp" name="whatsapp" type="tel" placeholder="81 1234 5678" className={styles.control} />
-      </div>
-      <div className={styles.campo}>
-        <label htmlFor="correo" className={styles.etiqueta}>
-          Correo
-        </label>
-        <input
-          id="correo"
-          name="correo"
-          type="email"
-          placeholder="contacto@consultorio.com"
-          className={styles.control}
-        />
-      </div>
-      <div className={styles.campo}>
-        <label htmlFor="cp" className={styles.etiqueta}>
-          Código postal de entrega
-        </label>
-        <input id="cp" name="cp" type="text" placeholder="64000" className={styles.control} />
-      </div>
-      <div className={styles.campo}>
-        <label htmlFor="paquete" className={styles.etiqueta}>
-          Paquete
-        </label>
-        <select id="paquete" name="paquete" className={styles.control}>
-          <option>Kit de inicio</option>
-          <option>Paquete de 3 botellas</option>
-          <option>Caja completa (6 botellas)</option>
-          <option>Suscripción</option>
-        </select>
-      </div>
-      <div className={styles.campo}>
-        <label htmlFor="color" className={styles.etiqueta}>
-          Color del dispensador (kit)
-        </label>
-        <select id="color" name="color" className={styles.control}>
-          <option>Blanco</option>
-          <option>Negro</option>
-          <option>Níquel (+$200)</option>
-        </select>
-      </div>
-      <div className={styles.campo}>
-        <label htmlFor="cantidad" className={styles.etiqueta}>
-          Cantidad
-        </label>
-        <input id="cantidad" name="cantidad" type="number" defaultValue={1} min={1} className={styles.control} />
-      </div>
-      <div className={styles.campo}>
-        <label htmlFor="factura" className={styles.etiqueta}>
-          ¿Requiere factura?
-        </label>
-        <select id="factura" name="factura" className={styles.control}>
-          <option>Sí</option>
-          <option>No</option>
-        </select>
-      </div>
-      <button type="submit" className={styles.enviar}>
-        Enviar pedido
-      </button>
-    </form>
+    </div>
   )
 }

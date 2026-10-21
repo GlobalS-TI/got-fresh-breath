@@ -40,12 +40,36 @@ const notifyNewOrder: CollectionAfterChangeHook = async ({ doc, operation, req }
     clienteTelefono = usuario?.telefono
   }
 
-  const itemsHtml = doc.items
-    .map(
-      (item: { cantidad: number; precioUnitario: number }) =>
-        `<li>${item.cantidad} × $${item.precioUnitario} MXN</li>`,
-    )
+  // Con kits por color, ventas necesita saber QUÉ producto se pidió — no solo cantidad y precio.
+  type ItemPedido = { producto: number | { id: number }; cantidad: number; precioUnitario: number }
+  const productoIds = (doc.items as ItemPedido[]).map((item) =>
+    typeof item.producto === 'object' ? item.producto.id : item.producto,
+  )
+  const { docs: productos } = await req.payload
+    .find({ collection: 'products', where: { id: { in: productoIds } }, limit: productoIds.length, depth: 0 })
+    .catch(() => ({ docs: [] as { id: number; nombre: string }[] }))
+  const nombrePorId = new Map(productos.map((p) => [p.id, p.nombre]))
+
+  const itemsHtml = (doc.items as ItemPedido[])
+    .map((item, i) => {
+      const nombre = nombrePorId.get(productoIds[i]) ?? `Producto #${productoIds[i]}`
+      return `<li>${item.cantidad} × ${escapeHtml(nombre)} — $${item.precioUnitario} MXN c/u</li>`
+    })
     .join('')
+
+  // Pedidos anteriores al desglose de envío/IVA solo tienen `total`.
+  const desgloseHtml =
+    typeof doc.subtotal === 'number'
+      ? `
+        <p><strong>Subtotal:</strong> $${doc.subtotal} MXN</p>
+        <p><strong>Envío:</strong> $${doc.envio ?? 0} MXN</p>
+        <p><strong>IVA:</strong> $${doc.iva ?? 0} MXN</p>`
+      : ''
+
+  const direccion = doc.direccionEnvio ?? {}
+  const direccionTexto = [direccion.calle, direccion.ciudad, direccion.estado, direccion.cp]
+    .filter(Boolean)
+    .join(', ')
 
   await sendEmail({
     to: NOTIFICATION_EMAIL,
@@ -55,9 +79,12 @@ const notifyNewOrder: CollectionAfterChangeHook = async ({ doc, operation, req }
       <p><strong>Pedido:</strong> #${doc.id}</p>
       <p><strong>Cliente:</strong> ${escapeHtml(clienteEmail) || 'desconocido'}</p>
       <p><strong>Teléfono:</strong> ${escapeHtml(clienteTelefono) || '—'}</p>
+      <p><strong>Dirección de envío:</strong> ${escapeHtml(direccionTexto) || '—'}</p>
+      <ul>${itemsHtml}</ul>
+      ${desgloseHtml}
       <p><strong>Total:</strong> $${doc.total} MXN</p>
       <p><strong>Método de pago:</strong> ${escapeHtml(doc.metodoPago) || 'por definir'}</p>
-      <ul>${itemsHtml}</ul>
+      <p><strong>Requiere factura:</strong> ${doc.requiereFactura ? 'Sí (datos fiscales en el perfil del cliente)' : 'No'}</p>
     `,
   })
 
@@ -67,8 +94,9 @@ const notifyNewOrder: CollectionAfterChangeHook = async ({ doc, operation, req }
       subject: `Confirmación de tu pedido #${doc.id} — Got Fresh Breath`,
       html: `
         <h2>¡Gracias por tu pedido!</h2>
-        <p>Recibimos tu pedido #${doc.id} por un total de $${doc.total} MXN.</p>
+        <p>Recibimos tu pedido #${doc.id} por un total de $${doc.total} MXN (IVA incluido).</p>
         <ul>${itemsHtml}</ul>
+        ${desgloseHtml}
         <p>Nuestro equipo se pondrá en contacto contigo para confirmar el pago y envío.</p>
       `,
     })
@@ -81,7 +109,7 @@ export const Orders: CollectionConfig = {
   slug: 'orders',
   admin: {
     useAsTitle: 'id',
-    defaultColumns: ['id', 'usuario', 'total', 'estado', 'createdAt'],
+    defaultColumns: ['id', 'usuario', 'total', 'estado', 'requiereFactura', 'createdAt'],
     group: 'Tienda',
   },
   hooks: {
@@ -115,9 +143,22 @@ export const Orders: CollectionConfig = {
         { name: 'producto', type: 'relationship', relationTo: 'products', required: true },
         { name: 'cantidad', type: 'number', required: true, min: 1 },
         { name: 'precioUnitario', type: 'number', required: true, label: 'Precio unitario al momento de la compra' },
+        { name: 'costoEnvioUnitario', type: 'number', label: 'Envío por unidad al momento de la compra' },
       ],
     },
-    { name: 'total', type: 'number', required: true, label: 'Total (MXN)' },
+    // Desglose calculado por calcularTotales (src/lib/precios.ts). Opcionales porque los pedidos
+    // anteriores a este cambio solo tienen `total`.
+    { name: 'subtotal', type: 'number', label: 'Subtotal productos (MXN, sin IVA)' },
+    { name: 'envio', type: 'number', label: 'Envío (MXN, sin IVA)' },
+    { name: 'iva', type: 'number', label: 'IVA (MXN)' },
+    { name: 'total', type: 'number', required: true, label: 'Total (MXN, IVA incluido)' },
+    {
+      name: 'requiereFactura',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Requiere factura',
+      admin: { description: 'Los datos fiscales están en el perfil del cliente (Usuarios → Datos fiscales).' },
+    },
     {
       name: 'estado',
       type: 'select',

@@ -79,13 +79,17 @@ export default async function TiendaPage() {
                   >
                     {product.nombre}
                   </Link>
-                  <p className="mt-1 font-bold text-brand-700">{formatPrecio(product.precio)}</p>
+                  <p className="mt-1 font-bold text-brand-700">
+                    {formatPrecio(product.precio)}
+                    <span className="text-sm font-medium text-slate-500"> + IVA</span>
+                  </p>
                   <div className="mt-4 flex flex-col gap-2">
                     <AddToCartButtons
                       productId={product.id}
                       slug={product.slug}
                       nombre={product.nombre}
                       precio={product.precio}
+                      costoEnvio={product.costoEnvio ?? 0}
                       categoria={product.categoria}
                       imagenUrl={imagenUrl}
                     />

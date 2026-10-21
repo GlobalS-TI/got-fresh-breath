@@ -30,6 +30,14 @@ Empieza por `.claude/skills/payload/SKILL.md` para referencia rápida, luego rev
   `orders.access.create` es solo-admin para que nadie cree pedidos con un POST directo a
   `/api/orders`. Los pedidos **históricos** de invitado conservan su `accessToken` opaco (UUID) para
   verse en `/pedido/[id]` sin exponer el ID secuencial — no quitar esa lógica.
+- **Precios sin IVA**: `products.precio` y `products.costoEnvio` (por unidad) se guardan **sin
+  IVA**. El total de un pedido (productos + envío + 16% de IVA) se calcula únicamente con
+  `calcularTotales` (`src/lib/precios.ts`), que usan tanto `resolveCartItems` en el servidor como la
+  UI del checkout — no recalcular totales por otro lado.
+- **Un solo checkout**: `CheckoutForm` (`src/components/CheckoutForm.tsx`) es el checkout del sitio;
+  lo usan `/carrito` y la landing `/consultorios`. Landings nuevas deben reutilizarlo, no crear otro.
+  Antes de capturar un pago, `capturePaypalOrderAction` verifica que el monto de la orden de PayPal
+  sea igual al total recalculado.
 - **Server actions** (`src/actions/`) son la puerta de entrada para mutaciones desde el frontend
   (login/registro, checkout, captura de PayPal, envío de leads) — el admin panel usa la Local API
   de Payload directamente. `checkRateLimit` (`src/lib/rate-limit.ts`) protege endpoints sensibles

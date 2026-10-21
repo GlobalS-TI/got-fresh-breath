@@ -1,3 +1,48 @@
+/* Tailwind sin preflight: la landing tiene su propio diseño (CSS modules) y el reset global de
+   Tailwind le cambiaría márgenes, listas, etc. Solo se cargan theme + utilities para que el
+   CheckoutForm compartido con /carrito (escrito en Tailwind) se vea igual aquí. */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '../brand-theme.css';
+
+/* Mini-reset solo para el contenedor del checkout, en reemplazo del preflight. Va en la capa
+   `base` para que las utilidades de Tailwind (capa `utilities`) sigan ganando. */
+@layer base {
+  .gfb-checkout :where(p, dl, dd, h2, h3) {
+    margin: 0;
+  }
+
+  .gfb-checkout :where(fieldset) {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .gfb-checkout :where(legend) {
+    padding: 0;
+  }
+
+  .gfb-checkout :where(input, select, button) {
+    font: inherit;
+  }
+
+  .gfb-checkout :where(button) {
+    border: 0;
+  }
+
+  .gfb-checkout :where(*, ::before, ::after) {
+    box-sizing: border-box;
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .gfb-checkout :where(input, select) {
+    border-width: 1px;
+  }
+}
+
 /* Scroll suave para los links ancla (#paquetes, #pedido, ...). Se respeta la preferencia
    de movimiento reducido del sistema. */
 @media (prefers-reduced-motion: no-preference) {

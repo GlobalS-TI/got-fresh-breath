@@ -7,6 +7,7 @@ export type CartItem = {
   slug: string
   nombre: string
   precio: number
+  costoEnvio: number
   cantidad: number
   imagenUrl?: string | null
   categoria: 'dispensador' | 'consumible'
@@ -19,13 +20,13 @@ type CartContextValue = {
   updateCantidad: (productId: number, cantidad: number) => void
   clear: () => void
   count: number
-  total: number
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
-// v2: agrega `categoria` a CartItem. Cambiar la clave descarta carritos con el shape viejo en
-// vez de hidratarlos a medias (ej. categoria undefined, que rompería el chequeo de límite).
-const STORAGE_KEY = 'gfb-cart-v2'
+// v2: agrega `categoria` a CartItem. v3: agrega `costoEnvio`. Cambiar la clave descarta carritos
+// con el shape viejo en vez de hidratarlos a medias (ej. categoria undefined, que rompería el
+// chequeo de límite, o costoEnvio undefined, que mostraría un total distinto al que se cobra).
+const STORAGE_KEY = 'gfb-cart-v3'
 const MAX_CANTIDAD_POR_ITEM = 99
 
 function isValidCartItem(value: unknown): value is CartItem {
@@ -34,6 +35,7 @@ function isValidCartItem(value: unknown): value is CartItem {
   return (
     typeof item.productId === 'number' &&
     typeof item.cantidad === 'number' &&
+    typeof item.costoEnvio === 'number' &&
     (item.categoria === 'dispensador' || item.categoria === 'consumible')
   )
 }
@@ -93,11 +95,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clear = useCallback(() => setItems([]), [])
 
+  // Los totales del pedido (envío e IVA incluidos) se calculan con calcularTotales en el checkout.
   const count = useMemo(() => items.reduce((sum, i) => sum + i.cantidad, 0), [items])
-  const total = useMemo(() => items.reduce((sum, i) => sum + i.precio * i.cantidad, 0), [items])
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateCantidad, clear, count, total }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateCantidad, clear, count }}>
       {children}
     </CartContext.Provider>
   )

@@ -1,8 +1,9 @@
 'use server'
 
 import { parseCartItemsJson, resolveCartItems } from '@/lib/cart-pricing'
+import { guardarDatosFiscalesDelPedido, requireCheckoutUser } from '@/lib/checkout-user'
+import { resolverFactura } from '@/lib/datos-fiscales'
 import { getPayloadClient } from '@/lib/payload'
-import { requireCheckoutUser } from '@/lib/checkout-user'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getSession } from '@/lib/session'
 
@@ -28,6 +29,11 @@ export async function checkoutAction(
     return { error: 'Carrito inválido.' }
   }
 
+  const factura = resolverFactura(user, formData.get('requiereFactura') === 'on', formData)
+  if (!factura.ok) {
+    return { error: factura.error }
+  }
+
   const payload = await getPayloadClient()
   const resolved = await resolveCartItems(payload, items, user.rol)
   if (!resolved.ok) {
@@ -50,7 +56,11 @@ export async function checkoutAction(
     data: {
       usuario: user.id,
       items: resolved.resolvedItems,
+      subtotal: resolved.subtotal,
+      envio: resolved.envio,
+      iva: resolved.iva,
       total: resolved.total,
+      requiereFactura: factura.requiereFactura,
       // Forzado también por el hook enforceInitialStatus — explícito aquí solo para satisfacer el tipo.
       estado: 'pendiente' as const,
       metodoPago,
@@ -58,11 +68,15 @@ export async function checkoutAction(
     },
   }
 
+  let orderId: number
   try {
     const order = await payload.create(createArgs)
-
-    return { success: true, orderId: order.id }
+    orderId = order.id
   } catch {
     return { error: 'No se pudo crear tu pedido. Intenta de nuevo.' }
   }
+
+  await guardarDatosFiscalesDelPedido(payload, user, factura.datosFiscalesNuevos)
+
+  return { success: true, orderId }
 }

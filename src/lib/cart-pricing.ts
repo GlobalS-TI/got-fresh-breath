@@ -1,16 +1,22 @@
 import type { Payload } from 'payload'
 
 import { MAX_DISPENSADORES_INDIVIDUAL } from '@/lib/constants'
+import { calcularTotales, type TotalesPedido } from '@/lib/precios'
 
 export const MAX_ITEMS_DISTINTOS = 20
 export const MAX_CANTIDAD_POR_ITEM = 99
 
 export type CartItemInput = { productId: number; cantidad: number }
-export type ResolvedOrderItem = { producto: number; cantidad: number; precioUnitario: number }
+export type ResolvedOrderItem = {
+  producto: number
+  cantidad: number
+  precioUnitario: number
+  costoEnvioUnitario: number
+}
 
 export type ResolveCartResult =
   | { ok: false; error: string }
-  | { ok: true; resolvedItems: ResolvedOrderItem[]; total: number }
+  | ({ ok: true; resolvedItems: ResolvedOrderItem[] } & TotalesPedido)
 
 export function parseCartItemsJson(raw: string): CartItemInput[] | null {
   try {
@@ -25,7 +31,8 @@ export function parseCartItemsJson(raw: string): CartItemInput[] | null {
   }
 }
 
-// Nunca confía en precios/cantidades del cliente — recalcula todo contra el producto real en la
+// Nunca confía en precios/cantidades del cliente — recalcula todo (incluidos envío e IVA, vía
+// calcularTotales) contra el producto real en la
 // base de datos y aplica el límite de dispensadores para individual/invitado. Compartido entre
 // el checkout de transferencia/cotización y el flujo de PayPal para no duplicar esta lógica.
 export async function resolveCartItems(
@@ -52,7 +59,6 @@ export async function resolveCartItems(
   }
 
   const resolvedItems: ResolvedOrderItem[] = []
-  let total = 0
   let dispensadores = 0
 
   for (const item of items) {
@@ -63,8 +69,12 @@ export async function resolveCartItems(
     if (product.categoria === 'dispensador') {
       dispensadores += item.cantidad
     }
-    total += product.precio * item.cantidad
-    resolvedItems.push({ producto: product.id, cantidad: item.cantidad, precioUnitario: product.precio })
+    resolvedItems.push({
+      producto: product.id,
+      cantidad: item.cantidad,
+      precioUnitario: product.precio,
+      costoEnvioUnitario: product.costoEnvio ?? 0,
+    })
   }
 
   if (rol !== 'empresa' && rol !== 'distribuidor' && dispensadores > MAX_DISPENSADORES_INDIVIDUAL) {
@@ -74,5 +84,9 @@ export async function resolveCartItems(
     }
   }
 
-  return { ok: true, resolvedItems, total }
+  const totales = calcularTotales(
+    resolvedItems.map((i) => ({ precio: i.precioUnitario, costoEnvio: i.costoEnvioUnitario, cantidad: i.cantidad })),
+  )
+
+  return { ok: true, resolvedItems, ...totales }
 }

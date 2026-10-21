@@ -1,4 +1,5 @@
 import { CarritoClient } from '@/components/CarritoClient'
+import { toCheckoutUser } from '@/lib/checkout-user'
 import { getSession } from '@/lib/session'
 
 export const metadata = {
@@ -8,13 +9,5 @@ export const metadata = {
 export default async function CarritoPage() {
   const user = await getSession()
 
-  return (
-    <CarritoClient
-      user={
-        user
-          ? { nombre: user.nombre, email: user.email, rol: user.rol, telefono: user.telefono ?? null }
-          : null
-      }
-    />
-  )
+  return <CarritoClient user={toCheckoutUser(user)} />
 }

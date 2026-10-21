@@ -35,10 +35,14 @@ export type ParseDatosFiscalesResult =
   | { ok: true; datosFiscales: DatosFiscales | null }
   | { ok: false; error: string }
 
+// Campos tal cual los manda un formulario (FormData) o el flujo de PayPal (objeto plano).
+export type DatosFiscalesInput = FormData | Partial<Record<keyof DatosFiscales, string>>
+
 // Los datos fiscales son opcionales: si el cliente no llena ninguno se devuelve `null`; si llena
 // alguno, se exigen todos, porque un CFDI 4.0 no se puede timbrar con datos a medias.
-export function parseDatosFiscales(formData: FormData): ParseDatosFiscalesResult {
-  const campo = (key: string) => String(formData.get(key) || '').trim()
+export function parseDatosFiscales(source: DatosFiscalesInput): ParseDatosFiscalesResult {
+  const campo = (key: keyof DatosFiscales) =>
+    String((source instanceof FormData ? source.get(key) : source[key]) || '').trim()
 
   const datos = {
     rfc: campo('rfc').toUpperCase(),
@@ -73,6 +77,34 @@ export function parseDatosFiscales(formData: FormData): ParseDatosFiscalesResult
 
   // Los catálogos ya se validaron arriba, así que el cast a los tipos de select es seguro.
   return { ok: true, datosFiscales: datos as DatosFiscales }
+}
+
+export function tieneDatosFiscalesCompletos(datos: User['datosFiscales'] | null | undefined): boolean {
+  return Boolean(datos?.rfc && datos.razonSocial && datos.regimenFiscal && datos.usoCfdi && datos.cpFiscal)
+}
+
+export type ResolverFacturaResult =
+  | { ok: true; requiereFactura: boolean; datosFiscalesNuevos: DatosFiscales | null }
+  | { ok: false; error: string }
+
+// Si el pedido requiere factura y el cliente aún no tiene datos fiscales en su perfil, se le
+// piden en el checkout; `datosFiscalesNuevos` son los que hay que guardar en su perfil después de
+// crear el pedido. Si ya los tiene, se usan los del perfil y se ignora lo que venga del formulario.
+export function resolverFactura(
+  user: { datosFiscales?: User['datosFiscales'] },
+  requiereFactura: boolean,
+  source: DatosFiscalesInput,
+): ResolverFacturaResult {
+  if (!requiereFactura || tieneDatosFiscalesCompletos(user.datosFiscales)) {
+    return { ok: true, requiereFactura, datosFiscalesNuevos: null }
+  }
+
+  const fiscales = parseDatosFiscales(source)
+  if (!fiscales.ok) return fiscales
+  if (!fiscales.datosFiscales) {
+    return { ok: false, error: 'Para facturar, completa tus datos fiscales.' }
+  }
+  return { ok: true, requiereFactura, datosFiscalesNuevos: fiscales.datosFiscales }
 }
 
 // Teléfono mexicano: 10 dígitos, opcionalmente con lada de país (52). Se guarda tal cual lo

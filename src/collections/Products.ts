@@ -18,7 +18,16 @@ export const Products: CollectionConfig = {
     },
     { name: 'descripcion', type: 'textarea', required: true },
     { name: 'descripcionCorta', type: 'text', label: 'Descripción corta (para cards)' },
-    { name: 'precio', type: 'number', required: true, label: 'Precio (MXN)', min: 0 },
+    { name: 'precio', type: 'number', required: true, label: 'Precio (MXN, sin IVA)', min: 0 },
+    {
+      name: 'costoEnvio',
+      type: 'number',
+      required: true,
+      defaultValue: 0,
+      min: 0,
+      label: 'Costo de envío por unidad (MXN, sin IVA)',
+      admin: { description: 'Se cobra por cada unidad del producto en el pedido. El IVA se suma en el checkout.' },
+    },
     {
       name: 'categoria',
       type: 'select',

@@ -5,6 +5,13 @@ name: Run database migrations
 # mergear contra la base de DATABASE_URL.
 on:
   workflow_dispatch:
+    inputs:
+      aceptar_advertencia_dev:
+        description: >-
+          Aceptar la advertencia de "dev mode" (la base tuvo cambios empujados por `pnpm dev`).
+          Sin esto, `payload migrate` se queda esperando una respuesta (y/N) que el CI no puede dar.
+        type: boolean
+        default: false
 
 jobs:
   migrate:
@@ -23,7 +30,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm run migrate
+      # --force-accept-warning solo descarta la marca de dev mode y corre las migraciones pendientes;
+      # las migraciones del repo están escritas para tolerar columnas que el dev mode ya haya creado.
+      - run: pnpm run migrate ${{ inputs.aceptar_advertencia_dev && '--force-accept-warning' || '' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
