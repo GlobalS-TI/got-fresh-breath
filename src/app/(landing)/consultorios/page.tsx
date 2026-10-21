@@ -7,7 +7,7 @@ import { getPayloadClient } from '@/lib/payload'
 import { esColor, esPaquete, SLUGS_CONSULTORIOS } from '@/lib/productos-consultorios'
 import { getSession } from '@/lib/session'
 
-import { PedidoForm, type ProductoLanding } from './PedidoForm'
+import { type ContactoCliente, PedidoForm, type ProductoLanding } from './PedidoForm'
 import styles from './consultorios.module.css'
 
 export const metadata: Metadata = {
@@ -125,6 +125,14 @@ export default async function ConsultoriosPage({
 }) {
   const params = await searchParams
   const [user, productos] = await Promise.all([getSession(), getProductosLanding()])
+  const contacto: ContactoCliente | null = user
+    ? {
+        nombre: `${user.nombre} ${user.apellido}`.trim(),
+        consultorio: user.empresa ?? '',
+        telefono: user.telefono ?? '',
+        email: user.email,
+      }
+    : null
 
   // Selección inicial desde la URL: la usan los botones "Pedir ..." de las tarjetas y el regreso
   // después de iniciar sesión / crear cuenta.
@@ -347,6 +355,7 @@ export default async function ConsultoriosPage({
           <PedidoForm
             key={`${inicial.paquete}-${inicial.color}-${inicial.cantidad}`}
             user={toCheckoutUser(user)}
+            contacto={contacto}
             productos={productos}
             inicial={inicial}
             whatsappUrl={WHATSAPP_URL}
