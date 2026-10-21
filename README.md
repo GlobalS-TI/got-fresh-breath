@@ -122,10 +122,11 @@ src/
 
 ## Migraciones
 
-Las migraciones de Payload viven en `src/migrations/`. Se corren automáticamente en CI
-(`.github/workflows/migrate.yml`) cada vez que se hace push a cualquier rama con cambios en
-`src/migrations/**`, contra la base definida en los secrets `DATABASE_URL` / `PAYLOAD_SECRET` del
-repo. Para correrlas localmente: `pnpm migrate`.
+Las migraciones de Payload viven en `src/migrations/`. En producción se corren **manualmente**
+desde GitHub Actions ("Run database migrations" → Run workflow, `.github/workflows/migrate.yml`)
+después de mergear a `main`, contra la base definida en los secrets `DATABASE_URL` /
+`PAYLOAD_SECRET` del repo (más `BLOB_READ_WRITE_TOKEN` para migraciones que suben archivos a Media).
+Un push no dispara migraciones. Para correrlas localmente: `pnpm migrate`.
 
 ## Tests
 
