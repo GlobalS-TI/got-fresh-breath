@@ -1,0 +1,553 @@
+/* Landing para consultorios dentales — portada del HTML estático de diseño
+   (gfb-consultorios/index.html). Se mantienen los valores originales del diseño. */
+
+.pagina {
+  font-family: var(--font-figtree), 'Helvetica Neue', sans-serif;
+  color: #1e2a33;
+  background: #ffffff;
+  min-width: 0;
+}
+
+.contenedor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.fondoSuave {
+  background: #f2f6fa;
+}
+
+.titulo,
+.h2,
+.precio {
+  font-family: var(--font-bricolage), 'Helvetica Neue', sans-serif;
+  font-weight: 800;
+}
+
+/* Header */
+
+.header {
+  border-bottom: 1px solid #e3e9ef;
+}
+
+.headerInterior {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+  display: block;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pagina .navLink {
+  color: #1e2a33;
+  text-decoration: none;
+}
+
+/* Botones */
+
+.boton,
+.botonContorno,
+.botonClaro {
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 6px;
+  min-height: 48px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagina .boton {
+  background: #1f5f99;
+  color: #ffffff;
+}
+
+.pagina .botonContorno {
+  background: #ffffff;
+  color: #1f5f99;
+  border: 1.5px solid #1f5f99;
+}
+
+.pagina .botonClaro {
+  background: #ffffff;
+  color: #1e2a33;
+  padding: 14px 22px;
+}
+
+.botonNav {
+  padding: 12px 20px;
+  min-height: 44px;
+}
+
+.botonHero {
+  font-size: 16px;
+  padding: 14px 24px;
+}
+
+.botonTarjeta {
+  margin-top: auto;
+  padding: 14px;
+}
+
+/* Hero */
+
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 72px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 48px;
+}
+
+.heroTexto {
+  flex: 999 1 480px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1f5f99;
+}
+
+.titulo {
+  margin: 0;
+  font-size: clamp(38px, 5vw, 60px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.heroLead {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.55;
+  color: #45535e;
+  max-width: 560px;
+  text-wrap: pretty;
+}
+
+.heroAcciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.heroImagen {
+  flex: 1 1 280px;
+  width: 100%;
+  max-width: 360px;
+  height: 440px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Encabezados de sección */
+
+.encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.h2 {
+  margin: 0;
+  font-size: 38px;
+  letter-spacing: -0.02em;
+}
+
+.subtitulo {
+  margin: 0;
+  font-size: 17px;
+  color: #45535e;
+}
+
+/* Paquetes */
+
+.contenedorPaquetes {
+  padding-top: 72px;
+  padding-bottom: 72px;
+  gap: 32px;
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 20px;
+}
+
+.tarjeta {
+  border: 1px solid #d8e3ee;
+  border-radius: 8px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tarjetaDestacada {
+  border: 2px solid #1f5f99;
+  background: #f2f6fa;
+}
+
+.etiquetaTarjeta {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1f5f99;
+}
+
+.insignia {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: #1f5f99;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.precio {
+  font-size: 40px;
+  letter-spacing: -0.02em;
+}
+
+.precioIva {
+  font-family: var(--font-figtree), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #45535e;
+  letter-spacing: 0;
+}
+
+.ahorro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pastilla {
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f5f99;
+  background: #eaf2fa;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.notaAhorro {
+  font-size: 14px;
+  color: #45535e;
+}
+
+.lista {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #45535e;
+}
+
+.aviso {
+  font-size: 16px;
+  color: #1e2a33;
+  background: #eaf2fa;
+  border-radius: 8px;
+  padding: 14px 20px;
+}
+
+.suscripcion {
+  background: #1e2a33;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 24px 28px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.suscripcionTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 999 1 420px;
+  min-width: 0;
+}
+
+.suscripcionTitulo {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.suscripcionDetalle {
+  font-size: 15px;
+  color: #c9d3dc;
+}
+
+/* Colores */
+
+.tarjetaColor {
+  border: 1px solid #d8e3ee;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+  background: #ffffff;
+}
+
+.espaciadorInsignia {
+  height: 22px;
+}
+
+.insigniaPremium {
+  align-self: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: #1f5f99;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.imagenColor {
+  width: 100%;
+  height: 300px;
+  object-fit: contain;
+  display: block;
+}
+
+.infoColor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.nombreColor {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.precioColor {
+  font-size: 15px;
+  color: #45535e;
+}
+
+.precioColor strong {
+  color: #1e2a33;
+}
+
+.precioRegular {
+  font-size: 14px;
+  color: #6b7884;
+}
+
+/* Cómo funciona */
+
+.pasos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 24px;
+}
+
+.paso {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 2px solid #1e2a33;
+  padding-top: 14px;
+}
+
+.numeroPaso {
+  font-weight: 700;
+  color: #1f5f99;
+}
+
+.tituloPaso {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.textoPaso {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #45535e;
+}
+
+/* Pedido */
+
+.pedido {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 72px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+}
+
+.pedidoTexto {
+  flex: 1 1 300px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pedidoLead {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: #45535e;
+}
+
+.formulario {
+  flex: 999 1 560px;
+  min-width: 0;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 18px;
+  border: 1px solid #d8e3ee;
+  border-radius: 8px;
+  padding: 28px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.etiqueta {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.control {
+  font: inherit;
+  border: 1px solid #b8c6d4;
+  border-radius: 6px;
+  padding: 12px;
+  min-height: 46px;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.enviar {
+  grid-column: 1 / -1;
+  font: inherit;
+  background: #1f5f99;
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  font-size: 17px;
+  padding: 16px;
+  border-radius: 6px;
+  min-height: 52px;
+  cursor: pointer;
+}
+
+/* Preguntas */
+
+.contenedorPreguntas {
+  gap: 24px;
+}
+
+.preguntas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 24px 40px;
+}
+
+.pregunta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preguntaTitulo {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.preguntaRespuesta {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #45535e;
+}
+
+/* Footer */
+
+.footer {
+  background: #1e2a33;
+  color: #c9d3dc;
+}
+
+.footerInterior {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.pagina .footerLinks a {
+  color: #ffffff;
+}
