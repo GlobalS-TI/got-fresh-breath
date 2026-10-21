@@ -54,7 +54,7 @@ Empieza por `.claude/skills/payload/SKILL.md` para referencia rápida, luego rev
   (`workflow_dispatch`) — un push nunca migra la base. Después de mergear a `main` una rama con
   migraciones, hay que correr el workflow desde Actions. Las migraciones se crean localmente con la
   CLI de Payload cuando cambie el schema. Si una migración sube archivos a Media, el workflow
-  necesita el secret `BLOB_READ_WRITE_TOKEN` (sin él los archivos irían al disco del runner).
+  necesita el secret `BLOB_READ_WRITE_TOKEN` (sin él los archivos irían al disco del runner; la migración de productos de consultorios los crea sin foto en ese caso).
   **Nunca correr `pnpm dev` contra la base de producción**: Payload empuja el schema directo y
   deja una marca (`batch = -1` en `payload_migrations`) que bloquea `payload migrate` con un prompt
   interactivo. El workflow tiene la casilla `limpiar_marca_dev_mode` para quitarla. Por lo mismo,

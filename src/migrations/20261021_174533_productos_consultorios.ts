@@ -94,11 +94,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "requiere_factura" boolean DEFAULT false;`)
 
   // En GitHub Actions sin Vercel Blob, Media escribiría al disco del runner (que se borra al
-  // terminar) y los productos quedarían apuntando a imágenes inexistentes. Mejor fallar y que
-  // la transacción revierta todo.
-  if (process.env.CI && !process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error(
-      'Falta BLOB_READ_WRITE_TOKEN: esta migración sube imágenes a Media. Agrega el secret al repo y vuelve a correr el workflow.',
+  // terminar) y los productos quedarían apuntando a imágenes inexistentes. En ese caso se crean
+  // los productos SIN foto (se le agrega después desde el admin); la landing no se afecta porque
+  // usa sus propias imágenes de public/consultorios/.
+  const subirImagenes = !(process.env.CI && !process.env.BLOB_READ_WRITE_TOKEN)
+  if (!subirImagenes) {
+    payload.logger.warn(
+      'Sin BLOB_READ_WRITE_TOKEN en CI: los productos de consultorios se crean sin imagen en Media.',
     )
   }
 
@@ -113,7 +115,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
     if (existente.totalDocs > 0) continue
 
     const imagenes = []
-    if (producto.imagen) {
+    if (producto.imagen && subirImagenes) {
       const media = await payload.create({
         collection: 'media',
         data: { alt: producto.alt },
