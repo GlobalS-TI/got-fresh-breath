@@ -1,0 +1,7 @@
+/* Scroll suave para los links ancla (#paquetes, #pedido, ...). Se respeta la preferencia
+   de movimiento reducido del sistema. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
