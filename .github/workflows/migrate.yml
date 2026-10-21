@@ -1,11 +1,9 @@
 name: Run database migrations
 
+# Solo manual (Actions → "Run database migrations" → Run workflow). Antes corría en push a
+# cualquier rama con cambios en src/migrations/**, lo que aplicaba migraciones de ramas sin
+# mergear contra la base de DATABASE_URL.
 on:
-  push:
-    branches:
-      - '**'
-    paths:
-      - 'src/migrations/**'
   workflow_dispatch:
 
 jobs:
@@ -29,3 +27,6 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          # Las migraciones que suben archivos a Media (p. ej. imágenes de productos) necesitan
+          # Vercel Blob: sin token, Payload escribiría al disco del runner y el archivo se perdería.
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}

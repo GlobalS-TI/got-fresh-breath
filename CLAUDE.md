@@ -40,6 +40,8 @@ Empieza por `.claude/skills/payload/SKILL.md` para referencia rápida, luego rev
   en `payload.config.ts` sobre el orden de `providers`.
 - **Tipos generados**: después de cambiar cualquier colección/global, correr `pnpm generate:types`
   antes de usar los tipos en `src/payload-types.ts` — si no, quedan desincronizados.
-- **Migraciones**: se corren solas en CI al hacer push con cambios en `src/migrations/**` (ver
-  `.github/workflows/migrate.yml`). No es necesario correrlas manualmente en producción, pero sí
-  crearlas localmente con la CLI de Payload cuando cambie el schema.
+- **Migraciones**: el workflow `.github/workflows/migrate.yml` es **solo manual**
+  (`workflow_dispatch`) — un push nunca migra la base. Después de mergear a `main` una rama con
+  migraciones, hay que correr el workflow desde Actions. Las migraciones se crean localmente con la
+  CLI de Payload cuando cambie el schema. Si una migración sube archivos a Media, el workflow
+  necesita el secret `BLOB_READ_WRITE_TOKEN` (sin él los archivos irían al disco del runner).
