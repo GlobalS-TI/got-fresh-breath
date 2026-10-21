@@ -1,5 +1,7 @@
 import type { CollectionConfig, CollectionBeforeChangeHook, Validate } from 'payload'
 
+import { REGIMENES_FISCALES, USOS_CFDI } from '@/lib/datos-fiscales'
+
 // Roles que un usuario puede auto-asignarse al registrarse. 'distribuidor' se otorga
 // manualmente por un admin tras pasar por el flujo de leads (formulario Distribuidor);
 // 'admin' nunca es auto-asignable.
@@ -34,7 +36,7 @@ export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['nombre', 'apellido', 'email', 'rol', 'empresa'],
+    defaultColumns: ['nombre', 'apellido', 'email', 'telefono', 'rol', 'empresa'],
     group: 'CRM',
   },
   auth: true,
@@ -44,6 +46,13 @@ export const Users: CollectionConfig = {
   fields: [
     { name: 'nombre', type: 'text', required: true },
     { name: 'apellido', type: 'text', required: true },
+    {
+      // Obligatorio en el registro (ver registerAction), pero no en el schema: las cuentas
+      // creadas antes de este campo no lo tienen y no deben quedar inválidas al editarlas.
+      name: 'telefono',
+      type: 'text',
+      label: 'Teléfono',
+    },
     {
       name: 'rol',
       type: 'select',
@@ -68,6 +77,20 @@ export const Users: CollectionConfig = {
         }
         return true
       }) as Validate<string | null | undefined>,
+    },
+    {
+      // Opcionales — solo los llenan los clientes que requieren factura. La validación de
+      // "todos o ninguno" y del formato de RFC vive en parseDatosFiscales (src/lib/datos-fiscales.ts).
+      name: 'datosFiscales',
+      type: 'group',
+      label: 'Datos fiscales',
+      fields: [
+        { name: 'rfc', type: 'text', label: 'RFC' },
+        { name: 'razonSocial', type: 'text', label: 'Razón social' },
+        { name: 'regimenFiscal', type: 'select', label: 'Régimen fiscal', options: REGIMENES_FISCALES },
+        { name: 'usoCfdi', type: 'select', label: 'Uso de CFDI', options: USOS_CFDI },
+        { name: 'cpFiscal', type: 'text', label: 'Código postal fiscal' },
+      ],
     },
   ],
   access: {

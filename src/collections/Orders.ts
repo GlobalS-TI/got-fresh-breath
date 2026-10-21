@@ -5,9 +5,9 @@ import { escapeHtml, NOTIFICATION_EMAIL, sendEmail } from '@/lib/email'
 
 export { MAX_DISPENSADORES_INDIVIDUAL } from '@/lib/constants'
 
-// Fuerza el estado inicial — nunca confiar en `data.estado` mandado por el cliente, ya que
-// `access.create` es público (cualquiera podría intentar un POST directo con estado:"pagado").
-// `context.paymentVerified` solo lo puede fijar nuestro propio server action (capturePaypalOrderAction)
+// Fuerza el estado inicial — nunca confiar en `data.estado` mandado por el cliente. Aunque
+// `access.create` ya es solo-admin (los pedidos del frontend se crean vía Local API desde los
+// server actions), se mantiene como defensa en profundidad. `context.paymentVerified` solo lo puede fijar nuestro propio server action (capturePaypalOrderAction)
 // después de confirmar la captura con la API de PayPal — no viene del body de la request pública,
 // así que un caller externo no puede falsificarlo.
 const enforceInitialStatus: CollectionBeforeChangeHook = ({ data, operation, context }) => {
@@ -19,6 +19,8 @@ const enforceInitialStatus: CollectionBeforeChangeHook = ({ data, operation, con
 
 // Token opaco para que un invitado (sin cuenta) pueda ver la confirmación de SU pedido en
 // /pedido/[id] sin que el ID secuencial permita enumerar/ver pedidos de otros invitados.
+// Ya no se crean pedidos de invitado (todo pedido requiere cuenta), pero los pedidos históricos
+// de invitado siguen dependiendo de este token para verse.
 const generateAccessToken: CollectionBeforeChangeHook = ({ data, operation }) => {
   if (operation === 'create') {
     data.accessToken = randomUUID()
@@ -30,10 +32,12 @@ const notifyNewOrder: CollectionAfterChangeHook = async ({ doc, operation, req }
   if (operation !== 'create') return doc
 
   let clienteEmail = doc.guestEmail as string | null | undefined
-  if (!clienteEmail && doc.usuario) {
+  let clienteTelefono: string | null | undefined
+  if (doc.usuario) {
     const usuarioId = typeof doc.usuario === 'object' ? doc.usuario.id : doc.usuario
     const usuario = await req.payload.findByID({ collection: 'users', id: usuarioId }).catch(() => null)
-    clienteEmail = usuario?.email
+    clienteEmail = clienteEmail || usuario?.email
+    clienteTelefono = usuario?.telefono
   }
 
   const itemsHtml = doc.items
@@ -50,6 +54,7 @@ const notifyNewOrder: CollectionAfterChangeHook = async ({ doc, operation, req }
       <h2>Nuevo pedido recibido</h2>
       <p><strong>Pedido:</strong> #${doc.id}</p>
       <p><strong>Cliente:</strong> ${escapeHtml(clienteEmail) || 'desconocido'}</p>
+      <p><strong>Teléfono:</strong> ${escapeHtml(clienteTelefono) || '—'}</p>
       <p><strong>Total:</strong> $${doc.total} MXN</p>
       <p><strong>Método de pago:</strong> ${escapeHtml(doc.metodoPago) || 'por definir'}</p>
       <ul>${itemsHtml}</ul>
@@ -88,7 +93,7 @@ export const Orders: CollectionConfig = {
     {
       name: 'guestEmail',
       type: 'email',
-      label: 'Email (compra como invitado)',
+      label: 'Email (compra como invitado — solo pedidos históricos)',
       admin: { condition: (_, { usuario }) => !usuario },
     },
     {
@@ -157,7 +162,10 @@ export const Orders: CollectionConfig = {
       if (req.user.rol === 'admin') return true
       return { usuario: { equals: req.user.id } }
     },
-    create: () => true,
+    // Solo admin vía REST/admin panel. Los clientes crean pedidos únicamente desde los server
+    // actions de checkout/PayPal (Local API), que exigen sesión y recalculan precios en servidor —
+    // un POST directo a /api/orders podía crear pedidos con items/total arbitrarios.
+    create: ({ req }) => req.user?.rol === 'admin',
     update: ({ req }) => req.user?.rol === 'admin',
     delete: ({ req }) => req.user?.rol === 'admin',
   },

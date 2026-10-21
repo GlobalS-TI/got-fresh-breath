@@ -6,11 +6,12 @@ import { loginAction, type AuthActionState } from '@/actions/auth'
 
 const initialState: AuthActionState = { error: '' }
 
-export function LoginForm() {
+export function LoginForm({ redirectTo }: { redirectTo?: string | null }) {
   const [state, formAction, isPending] = useActionState(loginAction, initialState)
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      {redirectTo && <input type="hidden" name="redirect" value={redirectTo} />}
       <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
         Email
         <input

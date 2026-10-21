@@ -3,8 +3,10 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
+import { isTelefonoValido, parseDatosFiscales } from '@/lib/datos-fiscales'
 import { getPayloadClient } from '@/lib/payload'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { safeRedirectPath } from '@/lib/redirect'
 
 export type AuthActionState = { error: string }
 
@@ -56,7 +58,8 @@ export async function loginAction(
     expires: new Date(exp * 1000),
   })
 
-  redirect('/cuenta')
+  // Regresa al cliente a donde estaba (p. ej. /carrito) si llegó al login desde ahí.
+  redirect(safeRedirectPath(formData.get('redirect')) ?? '/cuenta')
 }
 
 export async function registerAction(
@@ -71,13 +74,17 @@ export async function registerAction(
   const nombre = String(formData.get('nombre') || '').trim()
   const apellido = String(formData.get('apellido') || '').trim()
   const email = String(formData.get('email') || '').trim()
+  const telefono = String(formData.get('telefono') || '').trim()
   const password = String(formData.get('password') || '')
   const confirmPassword = String(formData.get('confirmPassword') || '')
   const rol = String(formData.get('rol') || 'individual') === 'empresa' ? 'empresa' : 'individual'
   const empresa = String(formData.get('empresa') || '').trim()
 
-  if (!nombre || !apellido || !email || !password) {
+  if (!nombre || !apellido || !email || !telefono || !password) {
     return { error: 'Todos los campos son requeridos.' }
+  }
+  if (!isTelefonoValido(telefono)) {
+    return { error: 'El teléfono debe tener 10 dígitos.' }
   }
   if (password !== confirmPassword) {
     return { error: 'Las contraseñas no coinciden.' }
@@ -92,6 +99,11 @@ export async function registerAction(
     return { error: 'El nombre de la empresa es requerido.' }
   }
 
+  const fiscales = parseDatosFiscales(formData)
+  if (!fiscales.ok) {
+    return { error: fiscales.error }
+  }
+
   const payload = await getPayloadClient()
 
   try {
@@ -101,9 +113,11 @@ export async function registerAction(
         nombre,
         apellido,
         email,
+        telefono,
         password,
         rol,
         ...(rol === 'empresa' ? { empresa } : {}),
+        ...(fiscales.datosFiscales ? { datosFiscales: fiscales.datosFiscales } : {}),
       },
     })
   } catch (err) {

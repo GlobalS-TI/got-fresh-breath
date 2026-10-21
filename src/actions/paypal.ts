@@ -2,6 +2,7 @@
 
 import type { CheckoutState } from '@/actions/checkout'
 import { type CartItemInput, resolveCartItems } from '@/lib/cart-pricing'
+import { requireCheckoutUser } from '@/lib/checkout-user'
 import { getPayloadClient } from '@/lib/payload'
 import { capturePaypalOrder, createPaypalOrder } from '@/lib/paypal'
 import { checkRateLimit } from '@/lib/rate-limit'
@@ -13,10 +14,14 @@ export async function createPaypalOrderAction(items: CartItemInput[]): Promise<{
     return { error: rateLimit.error }
   }
 
-  const user = await getSession()
+  const checkoutUser = requireCheckoutUser(await getSession())
+  if (!checkoutUser.ok) {
+    return { error: checkoutUser.error }
+  }
+
   const payload = await getPayloadClient()
 
-  const resolved = await resolveCartItems(payload, items, user?.rol ?? 'individual')
+  const resolved = await resolveCartItems(payload, items, checkoutUser.user.rol)
   if (!resolved.ok) {
     return { error: resolved.error }
   }
@@ -32,14 +37,12 @@ export async function createPaypalOrderAction(items: CartItemInput[]): Promise<{
 type CaptureArgs = {
   paypalOrderId: string
   items: CartItemInput[]
-  guestEmail?: string
   direccionEnvio?: { calle?: string; ciudad?: string; estadoDireccion?: string; cp?: string }
 }
 
 export async function capturePaypalOrderAction({
   paypalOrderId,
   items,
-  guestEmail,
   direccionEnvio,
 }: CaptureArgs): Promise<CheckoutState> {
   const rateLimit = await checkRateLimit('checkout', 10, 60_000)
@@ -47,11 +50,11 @@ export async function capturePaypalOrderAction({
     return { error: rateLimit.error }
   }
 
-  const user = await getSession()
-
-  if (!user && !guestEmail?.trim()) {
-    return { error: 'Ingresa un correo para continuar como invitado, o inicia sesión.' }
+  const checkoutUser = requireCheckoutUser(await getSession())
+  if (!checkoutUser.ok) {
+    return { error: checkoutUser.error }
   }
+  const { user } = checkoutUser
 
   // Se valida y se rechaza ANTES de capturar el pago — nunca cobrar primero y preguntar después.
   if (
@@ -64,7 +67,7 @@ export async function capturePaypalOrderAction({
   }
 
   const payload = await getPayloadClient()
-  const resolved = await resolveCartItems(payload, items, user?.rol ?? 'individual')
+  const resolved = await resolveCartItems(payload, items, user.rol)
   if (!resolved.ok) {
     return { error: resolved.error }
   }
@@ -82,8 +85,7 @@ export async function capturePaypalOrderAction({
     const order = await payload.create({
       collection: 'orders',
       data: {
-        usuario: user?.id,
-        guestEmail: user ? undefined : guestEmail?.trim(),
+        usuario: user.id,
         items: resolved.resolvedItems,
         total: resolved.total,
         // El hook enforceInitialStatus decide el estado real a partir de context.paymentVerified.
@@ -100,7 +102,7 @@ export async function capturePaypalOrderAction({
       context: { paymentVerified: true },
     })
 
-    return { success: true, orderId: order.id, accessToken: order.accessToken ?? undefined }
+    return { success: true, orderId: order.id }
   } catch {
     return { error: 'El pago se procesó pero no pudimos registrar tu pedido. Contáctanos con tu referencia de PayPal.' }
   }
