@@ -10,7 +10,11 @@ export default async function CarritoPage() {
 
   return (
     <CarritoClient
-      user={user ? { nombre: user.nombre, email: user.email, rol: user.rol } : null}
+      user={
+        user
+          ? { nombre: user.nombre, email: user.email, rol: user.rol, telefono: user.telefono ?? null }
+          : null
+      }
     />
   )
 }

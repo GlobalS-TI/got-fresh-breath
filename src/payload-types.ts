@@ -137,8 +137,16 @@ export interface User {
   id: number;
   nombre: string;
   apellido: string;
+  telefono?: string | null;
   rol: 'admin' | 'empresa' | 'distribuidor' | 'individual';
   empresa?: string | null;
+  datosFiscales?: {
+    rfc?: string | null;
+    razonSocial?: string | null;
+    regimenFiscal?: ('601' | '603' | '605' | '606' | '608' | '612' | '616' | '621' | '625' | '626') | null;
+    usoCfdi?: ('G01' | 'G03' | 'S01') | null;
+    cpFiscal?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -392,8 +400,18 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   nombre?: T;
   apellido?: T;
+  telefono?: T;
   rol?: T;
   empresa?: T;
+  datosFiscales?:
+    | T
+    | {
+        rfc?: T;
+        razonSocial?: T;
+        regimenFiscal?: T;
+        usoCfdi?: T;
+        cpFiscal?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;

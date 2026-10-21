@@ -108,9 +108,9 @@ src/
 
 | Colección | Propósito | Notas |
 | --- | --- | --- |
-| `users` | Cuentas de usuario y auth | Roles: `admin`, `empresa`, `distribuidor`, `individual`. Un usuario no-admin no puede auto-asignarse `admin` ni `distribuidor` (ver `enforceDefaultRol` en `Users.ts`) |
+| `users` | Cuentas de usuario y auth | Roles: `admin`, `empresa`, `distribuidor`, `individual`. Un usuario no-admin no puede auto-asignarse `admin` ni `distribuidor` (ver `enforceDefaultRol` en `Users.ts`). Teléfono obligatorio al registrarse; datos fiscales (RFC, razón social, régimen, uso de CFDI, CP fiscal) opcionales |
 | `products` | Catálogo de la tienda | Categorías `dispensador` / `consumible`; lectura pública, escritura solo admin |
-| `orders` | Pedidos | El estado inicial siempre lo fuerza el servidor (nunca el cliente); soporta compra como invitado vía `accessToken` opaco; envía correos de confirmación al crearse |
+| `orders` | Pedidos | El estado inicial siempre lo fuerza el servidor (nunca el cliente); requiere cuenta (creación solo vía server actions; los pedidos históricos de invitado se ven con su `accessToken` opaco); envía correos de confirmación al crearse |
 | `leads` | Leads de los formularios del sitio (Sectores, Distribuidor, Contacto, Comodato) | Al crearse notifica por correo y, si está configurado, hace webhook al CRM |
 | `clients` | Logos de clientes mostrados en el sitio | Lectura pública, escritura solo admin |
 | `media` | Archivos subidos (imágenes, PDFs, video) | Sube a Vercel Blob si `BLOB_READ_WRITE_TOKEN` está presente; si no, a disco local |

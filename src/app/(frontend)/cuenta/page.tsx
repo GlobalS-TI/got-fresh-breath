@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { logoutAction } from '@/actions/auth'
+import { PerfilForm } from '@/components/PerfilForm'
 import { getSession } from '@/lib/session'
 
 export const metadata = {
@@ -14,6 +15,8 @@ export default async function CuentaPage() {
   if (!user) {
     redirect('/login')
   }
+
+  const requiereEmpresa = user.rol === 'empresa' || user.rol === 'distribuidor'
 
   return (
     <div className="mx-auto max-w-md px-6 py-16">
@@ -34,6 +37,22 @@ export default async function CuentaPage() {
           </div>
         )}
       </dl>
+
+      <section className="mb-8">
+        <h2 className="mb-1 text-lg font-semibold text-slate-900">Tus datos</h2>
+        {!user.telefono && (
+          <p className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+            Agrega tu teléfono para poder hacer pedidos.
+          </p>
+        )}
+        <PerfilForm
+          telefono={user.telefono ?? ''}
+          empresa={user.empresa ?? ''}
+          requiereEmpresa={requiereEmpresa}
+          datosFiscales={user.datosFiscales ?? null}
+        />
+      </section>
+
       <Link
         href="/cuenta/pedidos"
         className="mb-4 inline-block font-semibold text-brand-600 hover:underline"

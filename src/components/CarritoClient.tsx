@@ -19,14 +19,16 @@ function formatPrecio(precio: number) {
 }
 
 type CarritoClientProps = {
-  user: { nombre: string; email: string; rol: string } | null
+  user: { nombre: string; email: string; rol: string; telefono: string | null } | null
 }
+
+const LOGIN_HREF = `/login?redirect=${encodeURIComponent('/carrito')}`
+const REGISTRO_HREF = `/registro?redirect=${encodeURIComponent('/carrito')}`
 
 export function CarritoClient({ user }: CarritoClientProps) {
   const { items, updateCantidad, removeItem, clear, total } = useCart()
   const [state, formAction, pending] = useActionState(checkoutAction, initialState)
   const [paypalError, setPaypalError] = useState('')
-  const [guestEmail, setGuestEmail] = useState('')
   const [direccion, setDireccion] = useState({ calle: '', ciudad: '', estadoDireccion: '', cp: '' })
   const router = useRouter()
 
@@ -38,7 +40,6 @@ export function CarritoClient({ user }: CarritoClientProps) {
     rol !== 'empresa' &&
     rol !== 'distribuidor' &&
     dispensadoresEnCarrito > MAX_DISPENSADORES_INDIVIDUAL
-  const faltaCorreoInvitado = !user && !guestEmail.trim()
   const direccionIncompleta =
     !direccion.calle.trim() ||
     !direccion.ciudad.trim() ||
@@ -48,8 +49,7 @@ export function CarritoClient({ user }: CarritoClientProps) {
   useEffect(() => {
     if (state.success && state.orderId) {
       clear()
-      const query = state.accessToken ? `?token=${state.accessToken}` : ''
-      router.push(`/pedido/${state.orderId}${query}`)
+      router.push(`/pedido/${state.orderId}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
@@ -117,137 +117,149 @@ export function CarritoClient({ user }: CarritoClientProps) {
         </p>
       )}
 
-      <form action={formAction} className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6">
-        <input
-          type="hidden"
-          name="items"
-          value={JSON.stringify(items.map((i) => ({ productId: i.productId, cantidad: i.cantidad })))}
-        />
-
-        {!user && (
-          <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-            Correo (compra como invitado)
+      {!user ? (
+        // Todo pedido requiere cuenta — el carrito se conserva (localStorage) mientras el cliente
+        // entra o se registra, y ?redirect lo regresa aquí al terminar.
+        <div className="rounded-lg border border-slate-200 p-6 text-center">
+          <p className="mb-4 text-slate-700">Inicia sesión o crea una cuenta para hacer tu pedido.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href={LOGIN_HREF}
+              className="rounded-md bg-brand-600 px-5 py-2 font-semibold text-white hover:bg-brand-700"
+            >
+              Iniciar sesión
+            </Link>
+            <Link
+              href={REGISTRO_HREF}
+              className="rounded-md border border-brand-600 px-5 py-2 font-semibold text-brand-600 hover:bg-brand-50"
+            >
+              Crear cuenta
+            </Link>
+          </div>
+        </div>
+      ) : !user.telefono ? (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-6 text-center text-sm text-amber-800">
+          Agrega tu teléfono en{' '}
+          <Link href="/cuenta" className="font-semibold underline">
+            Mi cuenta
+          </Link>{' '}
+          para poder hacer tu pedido.
+        </div>
+      ) : (
+        <>
+          <form action={formAction} className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6">
             <input
-              type="email"
-              name="guestEmail"
-              required
-              value={guestEmail}
-              onChange={(e) => setGuestEmail(e.target.value)}
-              className="rounded-md border border-slate-300 px-3 py-2"
+              type="hidden"
+              name="items"
+              value={JSON.stringify(items.map((i) => ({ productId: i.productId, cantidad: i.cantidad })))}
             />
-          </label>
-        )}
 
-        <fieldset className="grid gap-3 sm:grid-cols-2">
-          <legend className="mb-1 text-sm font-semibold text-slate-900">Dirección de envío</legend>
-          <input
-            name="calle"
-            placeholder="Calle y número"
-            value={direccion.calle}
-            onChange={(e) => setDireccion((d) => ({ ...d, calle: e.target.value }))}
-            className="rounded-md border border-slate-300 px-3 py-2 sm:col-span-2"
-          />
-          <input
-            name="ciudad"
-            placeholder="Ciudad"
-            value={direccion.ciudad}
-            onChange={(e) => setDireccion((d) => ({ ...d, ciudad: e.target.value }))}
-            className="rounded-md border border-slate-300 px-3 py-2"
-          />
-          <input
-            name="estadoDireccion"
-            placeholder="Estado"
-            value={direccion.estadoDireccion}
-            onChange={(e) => setDireccion((d) => ({ ...d, estadoDireccion: e.target.value }))}
-            className="rounded-md border border-slate-300 px-3 py-2"
-          />
-          <input
-            name="cp"
-            placeholder="Código postal"
-            value={direccion.cp}
-            onChange={(e) => setDireccion((d) => ({ ...d, cp: e.target.value }))}
-            className="rounded-md border border-slate-300 px-3 py-2"
-          />
-        </fieldset>
-
-        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-          Método de pago
-          <select
-            name="metodoPago"
-            defaultValue="cotizacion"
-            className="rounded-md border border-slate-300 px-3 py-2"
-          >
-            <option value="cotizacion">Solicitar cotización</option>
-            <option value="transferencia">Transferencia bancaria</option>
-          </select>
-        </label>
-
-        {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-
-        <AvisoPrivacidadNotice />
-
-        <button
-          type="submit"
-          disabled={pending || excedeLimite}
-          title={excedeLimite ? 'Reduce la cantidad de dispensadores para continuar' : undefined}
-          className="rounded-md bg-brand-600 py-3 font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {pending ? 'Procesando…' : 'Confirmar pedido'}
-        </button>
-      </form>
-
-      <div className="mt-6 rounded-lg border border-slate-200 p-6">
-        {PAYPAL_CLIENT_ID ? (
-          <>
-            <p className="mb-3 text-center text-sm font-medium text-slate-700">O paga ahora con PayPal</p>
-            {faltaCorreoInvitado && (
-              <p className="mb-3 text-center text-sm text-slate-500">
-                Ingresa tu correo arriba para pagar como invitado.
-              </p>
-            )}
-            {direccionIncompleta && (
-              <p className="mb-3 text-center text-sm text-slate-500">
-                Completa calle, ciudad, estado y código postal arriba para pagar con PayPal.
-              </p>
-            )}
-            <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: 'MXN' }}>
-              <PayPalButtons
-                disabled={excedeLimite || faltaCorreoInvitado || direccionIncompleta}
-                forceReRender={[items, guestEmail, direccion]}
-                createOrder={async () => {
-                  setPaypalError('')
-                  const cartItems = items.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
-                  const result = await createPaypalOrderAction(cartItems)
-                  if (result.error || !result.paypalOrderId) {
-                    setPaypalError(result.error ?? 'No se pudo iniciar el pago con PayPal.')
-                    throw new Error(result.error ?? 'No se pudo iniciar el pago con PayPal.')
-                  }
-                  return result.paypalOrderId
-                }}
-                onApprove={async (data) => {
-                  const cartItems = items.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
-                  const result = await capturePaypalOrderAction({
-                    paypalOrderId: data.orderID,
-                    items: cartItems,
-                    guestEmail: user ? undefined : guestEmail,
-                    direccionEnvio: direccion,
-                  })
-                  if (result.success && result.orderId) {
-                    clear()
-                    router.push(`/pedido/${result.orderId}`)
-                  } else {
-                    setPaypalError(result.error ?? 'No se pudo confirmar tu pedido.')
-                  }
-                }}
-                onError={() => setPaypalError('Ocurrió un error con PayPal. Intenta de nuevo.')}
+            <fieldset className="grid gap-3 sm:grid-cols-2">
+              <legend className="mb-1 text-sm font-semibold text-slate-900">Dirección de envío</legend>
+              <input
+                name="calle"
+                placeholder="Calle y número"
+                value={direccion.calle}
+                onChange={(e) => setDireccion((d) => ({ ...d, calle: e.target.value }))}
+                className="rounded-md border border-slate-300 px-3 py-2 sm:col-span-2"
               />
-            </PayPalScriptProvider>
-            {paypalError && <p className="mt-3 text-sm text-red-600">{paypalError}</p>}
-          </>
-        ) : (
-          <p className="text-center text-sm text-slate-400">PayPal (próximamente)</p>
-        )}
-      </div>
+              <input
+                name="ciudad"
+                placeholder="Ciudad"
+                value={direccion.ciudad}
+                onChange={(e) => setDireccion((d) => ({ ...d, ciudad: e.target.value }))}
+                className="rounded-md border border-slate-300 px-3 py-2"
+              />
+              <input
+                name="estadoDireccion"
+                placeholder="Estado"
+                value={direccion.estadoDireccion}
+                onChange={(e) => setDireccion((d) => ({ ...d, estadoDireccion: e.target.value }))}
+                className="rounded-md border border-slate-300 px-3 py-2"
+              />
+              <input
+                name="cp"
+                placeholder="Código postal"
+                value={direccion.cp}
+                onChange={(e) => setDireccion((d) => ({ ...d, cp: e.target.value }))}
+                className="rounded-md border border-slate-300 px-3 py-2"
+              />
+            </fieldset>
+
+            <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+              Método de pago
+              <select
+                name="metodoPago"
+                defaultValue="cotizacion"
+                className="rounded-md border border-slate-300 px-3 py-2"
+              >
+                <option value="cotizacion">Solicitar cotización</option>
+                <option value="transferencia">Transferencia bancaria</option>
+              </select>
+            </label>
+
+            {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+
+            <AvisoPrivacidadNotice />
+
+            <button
+              type="submit"
+              disabled={pending || excedeLimite}
+              title={excedeLimite ? 'Reduce la cantidad de dispensadores para continuar' : undefined}
+              className="rounded-md bg-brand-600 py-3 font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {pending ? 'Procesando…' : 'Confirmar pedido'}
+            </button>
+          </form>
+
+          <div className="mt-6 rounded-lg border border-slate-200 p-6">
+            {PAYPAL_CLIENT_ID ? (
+              <>
+                <p className="mb-3 text-center text-sm font-medium text-slate-700">O paga ahora con PayPal</p>
+                {direccionIncompleta && (
+                  <p className="mb-3 text-center text-sm text-slate-500">
+                    Completa calle, ciudad, estado y código postal arriba para pagar con PayPal.
+                  </p>
+                )}
+                <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: 'MXN' }}>
+                  <PayPalButtons
+                    disabled={excedeLimite || direccionIncompleta}
+                    forceReRender={[items, direccion]}
+                    createOrder={async () => {
+                      setPaypalError('')
+                      const cartItems = items.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
+                      const result = await createPaypalOrderAction(cartItems)
+                      if (result.error || !result.paypalOrderId) {
+                        setPaypalError(result.error ?? 'No se pudo iniciar el pago con PayPal.')
+                        throw new Error(result.error ?? 'No se pudo iniciar el pago con PayPal.')
+                      }
+                      return result.paypalOrderId
+                    }}
+                    onApprove={async (data) => {
+                      const cartItems = items.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
+                      const result = await capturePaypalOrderAction({
+                        paypalOrderId: data.orderID,
+                        items: cartItems,
+                        direccionEnvio: direccion,
+                      })
+                      if (result.success && result.orderId) {
+                        clear()
+                        router.push(`/pedido/${result.orderId}`)
+                      } else {
+                        setPaypalError(result.error ?? 'No se pudo confirmar tu pedido.')
+                      }
+                    }}
+                    onError={() => setPaypalError('Ocurrió un error con PayPal. Intenta de nuevo.')}
+                  />
+                </PayPalScriptProvider>
+                {paypalError && <p className="mt-3 text-sm text-red-600">{paypalError}</p>}
+              </>
+            ) : (
+              <p className="text-center text-sm text-slate-400">PayPal (próximamente)</p>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

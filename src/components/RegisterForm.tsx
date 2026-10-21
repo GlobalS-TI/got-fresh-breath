@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react'
 
 import { registerAction, type AuthActionState } from '@/actions/auth'
 import { AvisoPrivacidadNotice } from '@/components/AvisoPrivacidadNotice'
+import { DatosFiscalesFields } from '@/components/DatosFiscalesFields'
 
 const initialState: AuthActionState = { error: '' }
 
@@ -11,12 +12,13 @@ const inputClass =
   'rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-brand-500 focus:outline-none'
 const labelClass = 'flex flex-col gap-1 text-sm font-medium text-slate-700'
 
-export function RegisterForm() {
+export function RegisterForm({ redirectTo }: { redirectTo?: string | null }) {
   const [state, formAction, isPending] = useActionState(registerAction, initialState)
   const [rol, setRol] = useState<'individual' | 'empresa'>('individual')
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      {redirectTo && <input type="hidden" name="redirect" value={redirectTo} />}
       <div className="flex gap-4 text-sm font-medium text-slate-700">
         <label className="flex items-center gap-2">
           <input
@@ -59,6 +61,17 @@ export function RegisterForm() {
         <input type="email" name="email" required autoComplete="email" className={inputClass} />
       </label>
       <label className={labelClass}>
+        Teléfono
+        <input
+          type="tel"
+          name="telefono"
+          required
+          autoComplete="tel"
+          placeholder="81 1234 5678"
+          className={inputClass}
+        />
+      </label>
+      <label className={labelClass}>
         Contraseña
         <input type="password" name="password" required autoComplete="new-password" className={inputClass} />
       </label>
@@ -72,7 +85,8 @@ export function RegisterForm() {
           className={inputClass}
         />
       </label>
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      <DatosFiscalesFields />
+      {state.error &&<p className="text-sm text-red-600">{state.error}</p>}
       <AvisoPrivacidadNotice />
       <button
         type="submit"

@@ -25,9 +25,11 @@ Empieza por `.claude/skills/payload/SKILL.md` para referencia rápida, luego rev
   `enforceInitialStatus` en `Orders.ts`): el estado de un pedido solo puede pasar a `pagado` vía
   `context.paymentVerified`, fijado por el propio server action después de verificar el pago con
   PayPal — nunca desde el body de una request pública.
-- **Compra como invitado**: los pedidos de invitados usan un `accessToken` opaco (UUID) para que
-  puedan ver su confirmación en `/pedido/[id]` sin exponer el ID secuencial. Cualquier lógica nueva
-  de acceso a pedidos de invitados debe seguir usando ese token, no el ID.
+- **Todo pedido requiere cuenta**: ya no hay compra como invitado. Los server actions de checkout y
+  PayPal exigen sesión y teléfono vía `requireCheckoutUser` (`src/lib/checkout-user.ts`), y
+  `orders.access.create` es solo-admin para que nadie cree pedidos con un POST directo a
+  `/api/orders`. Los pedidos **históricos** de invitado conservan su `accessToken` opaco (UUID) para
+  verse en `/pedido/[id]` sin exponer el ID secuencial — no quitar esa lógica.
 - **Server actions** (`src/actions/`) son la puerta de entrada para mutaciones desde el frontend
   (login/registro, checkout, captura de PayPal, envío de leads) — el admin panel usa la Local API
   de Payload directamente. `checkRateLimit` (`src/lib/rate-limit.ts`) protege endpoints sensibles

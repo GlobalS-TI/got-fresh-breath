@@ -2,10 +2,11 @@
 
 import { parseCartItemsJson, resolveCartItems } from '@/lib/cart-pricing'
 import { getPayloadClient } from '@/lib/payload'
+import { requireCheckoutUser } from '@/lib/checkout-user'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getSession } from '@/lib/session'
 
-export type CheckoutState = { error?: string; success?: boolean; orderId?: number; accessToken?: string }
+export type CheckoutState = { error?: string; success?: boolean; orderId?: number }
 
 export async function checkoutAction(
   _prevState: CheckoutState,
@@ -16,12 +17,11 @@ export async function checkoutAction(
     return { error: rateLimit.error }
   }
 
-  const user = await getSession()
-  const guestEmail = String(formData.get('guestEmail') || '').trim()
-
-  if (!user && !guestEmail) {
-    return { error: 'Ingresa un correo para continuar como invitado, o inicia sesión.' }
+  const checkoutUser = requireCheckoutUser(await getSession())
+  if (!checkoutUser.ok) {
+    return { error: checkoutUser.error }
   }
+  const { user } = checkoutUser
 
   const items = parseCartItemsJson(String(formData.get('items') || '[]'))
   if (!items) {
@@ -29,7 +29,7 @@ export async function checkoutAction(
   }
 
   const payload = await getPayloadClient()
-  const resolved = await resolveCartItems(payload, items, user?.rol ?? 'individual')
+  const resolved = await resolveCartItems(payload, items, user.rol)
   if (!resolved.ok) {
     return { error: resolved.error }
   }
@@ -48,8 +48,7 @@ export async function checkoutAction(
   const createArgs = {
     collection: 'orders' as const,
     data: {
-      usuario: user?.id,
-      guestEmail: user ? undefined : guestEmail,
+      usuario: user.id,
       items: resolved.resolvedItems,
       total: resolved.total,
       // Forzado también por el hook enforceInitialStatus — explícito aquí solo para satisfacer el tipo.
@@ -62,7 +61,7 @@ export async function checkoutAction(
   try {
     const order = await payload.create(createArgs)
 
-    return { success: true, orderId: order.id, accessToken: order.accessToken ?? undefined }
+    return { success: true, orderId: order.id }
   } catch {
     return { error: 'No se pudo crear tu pedido. Intenta de nuevo.' }
   }
