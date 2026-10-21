@@ -48,6 +48,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (raw) {
         const parsed = JSON.parse(raw)
         if (Array.isArray(parsed) && parsed.every(isValidCartItem)) {
+          // Hidratar desde localStorage tiene que ser después del montaje: leerlo en el
+          // useState inicial haría que el HTML del servidor (carrito vacío) no coincida con el
+          // primer render del cliente y React marcaría error de hidratación.
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setItems(parsed)
         }
       }

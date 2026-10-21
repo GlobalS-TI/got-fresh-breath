@@ -28,23 +28,21 @@ export function NavbarClient({ user }: NavbarClientProps) {
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(!isHome)
+  const [scrolled, setScrolled] = useState(false)
   const { count } = useCart()
 
   // Solo la home tiene un hero con fondo propio detrás del nav - el resto de páginas
-  // siempre lo muestra sólido para no quedar flotando sobre contenido blanco.
+  // siempre lo muestra sólido (ver `solid`) para no quedar flotando sobre contenido blanco,
+  // así que solo en la home hace falta escuchar el scroll.
   useEffect(() => {
-    if (!isHome) {
-      setScrolled(true)
-      return
-    }
+    if (!isHome) return
     const onScroll = () => setScrolled(window.scrollY > 8)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [isHome])
 
-  const solid = scrolled || menuOpen
+  const solid = !isHome || scrolled || menuOpen
   const textColor = solid ? 'text-slate-600' : 'text-white/90'
 
   return (
