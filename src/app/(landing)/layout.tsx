@@ -1,9 +1,15 @@
 import React from 'react'
 
+import type { Metadata } from 'next'
 import { Bricolage_Grotesque, Figtree } from 'next/font/google'
 
 import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/GoogleTagManager'
+import { SITIO_URL } from '@/lib/sitio'
 import './landing.css'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITIO_URL),
+}
 
 // Root layout para landings de campaña (p. ej. /consultorios): traen su propio header/footer
 // y diseño, así que no usan el Navbar/Footer/Tailwind de (frontend). Las fuentes se sirven

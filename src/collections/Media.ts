@@ -37,7 +37,9 @@ export const Media: CollectionConfig = {
   fields: [{ name: 'alt', type: 'text', label: 'Texto alternativo' }],
   access: {
     read: () => true,
-    create: ({ req }) => !!req.user,
+    // Solo admin: los clientes registrados (empresa/individual/distribuidor) no suben archivos, y
+    // con `!!req.user` cualquiera con cuenta podía hacer POST /api/media.
+    create: ({ req }) => req.user?.rol === 'admin',
     update: ({ req }) => req.user?.rol === 'admin',
     delete: ({ req }) => req.user?.rol === 'admin',
   },

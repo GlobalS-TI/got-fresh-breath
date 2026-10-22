@@ -1,10 +1,12 @@
 import { LeadForm } from '@/components/LeadForm'
+import { metadatosDePagina } from '@/lib/sitio'
 
-export const metadata = {
-  title: 'Renta de Dispensadores de Enjuague Bucal en Comodato - Got Fresh Breath',
-  description:
+export const metadata = metadatosDePagina({
+  titulo: 'Renta de Dispensadores de Enjuague Bucal en Comodato - Got Fresh Breath',
+  descripcion:
     'Cotiza tu estación de enjuague bucal en comodato para hotel, oficina corporativa o coworking: instalación, mantenimiento y reposición de consumibles sin costo inicial de equipo.',
-}
+  ruta: '/comodato',
+})
 
 export default function ComodatoPage() {
   return (

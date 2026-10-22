@@ -43,17 +43,18 @@ export function Hero({ productImage = null }: HeroProps) {
           <h1 className="text-white">
             <span className="hero-line block text-2xl font-medium text-white/75 md:text-3xl">
               Tu reputación se mide
-            </span>
+            </span>{' '}
             <span className="hero-hook mt-1 block text-4xl font-extrabold leading-[1.05] md:text-6xl">
               a centímetros de distancia.
             </span>
           </h1>
           <p className="hero-copy mt-6 max-w-md text-lg text-white/90">
-            Protege la experiencia de tus comensales y clientes con un servicio automatizado todo
-            incluido.
+            Dispensadores de enjuague bucal en comodato: protege la experiencia de tus comensales y
+            clientes con un servicio automatizado todo incluido.
           </p>
           <Link
             href="/comodato"
+            data-evento="solicitar_comodato"
             className="hero-cta mt-8 inline-block rounded-md bg-white px-6 py-3 font-semibold text-brand-700 shadow-lg shadow-brand-900/20 transition-colors hover:bg-brand-50"
           >
             Solicitar Estación en Comodato

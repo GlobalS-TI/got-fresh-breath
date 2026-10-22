@@ -2,10 +2,14 @@ import { Play } from 'lucide-react'
 
 import { MediaSlot } from '@/components/MediaSlot'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
+import { metadatosDePagina } from '@/lib/sitio'
 
-export const metadata = {
-  title: 'Instalación - Got Fresh Breath',
-}
+export const metadata = metadatosDePagina({
+  titulo: 'Instalación - Got Fresh Breath',
+  descripcion:
+    'Cómo instalar el dispensador de enjuague bucal Got Fresh Breath paso a paso: colocación, montaje, vasos, botella de enjuague y mantenimiento.',
+  ruta: '/instalacion',
+})
 
 const PASOS = [
   {
@@ -44,7 +48,7 @@ export default async function InstalacionPage() {
   return (
     <>
       <section className="mx-auto max-w-6xl px-6 py-12">
-        <h1 className="sr-only">Instalación</h1>
+        <h1 className="sr-only">Instalación del dispensador de enjuague bucal Got Fresh Breath</h1>
         <div className="flex aspect-video items-center justify-center gap-3 overflow-hidden rounded-md border border-dashed border-slate-300 bg-slate-100 text-slate-400">
           {!video && <Play className="h-6 w-6" />}
           <MediaSlot

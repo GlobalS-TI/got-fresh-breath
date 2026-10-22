@@ -56,7 +56,7 @@ export function PedidoForm({ user, contacto, productos, inicial, whatsappUrl }: 
 
   useEffect(() => {
     if (state.success && state.orderId) {
-      router.push(`/pedido/${state.orderId}`)
+      router.push(`/pedido/${state.orderId}?nuevo=1`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])

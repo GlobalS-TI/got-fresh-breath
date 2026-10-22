@@ -14,18 +14,40 @@ const dirname = path.dirname(__filename)
 // traces del overlay de errores. React nunca usa eval() en producción, así que en build de
 // producción se omite y el CSP queda más estricto.
 //
-// Dominios de Google Tag Manager / GA4 / Ads: gtm.js y gtag.js se sirven desde
-// googletagmanager.com; los hits de GA4 y las conversiones de Ads salen por
-// google-analytics.com y (para algunos tags de Ads/remarketing) doubleclick.net.
+// Dominios de Google Tag Manager / GA4 / Ads: tomados de la guía oficial
+// https://developers.google.com/tag-platform/security/guides/csp (secciones de Tag Manager,
+// Analytics y Ads conversions/remarketing/Conversion Linker). Si "Calidad de Etiqueta" en GTM
+// vuelve a reportar recursos bloqueados, agregarlos aquí. Los dominios por país (google.<TLD>)
+// no admiten comodín a la derecha: solo se lista google.com.mx porque el tráfico es de México.
+const GOOGLE_SCRIPT_SRC = [
+  'https://www.googletagmanager.com',
+  'https://www.googleadservices.com',
+  'https://www.google.com',
+  'https://googleads.g.doubleclick.net',
+].join(' ')
+
+const GOOGLE_CONNECT_SRC = [
+  'https://www.googletagmanager.com',
+  'https://*.google-analytics.com',
+  'https://*.analytics.google.com',
+  'https://*.google.com',
+  'https://*.google.com.mx',
+  'https://*.g.doubleclick.net',
+  'https://ad.doubleclick.net',
+  'https://td.doubleclick.net',
+  'https://www.googleadservices.com',
+  'https://pagead2.googlesyndication.com',
+].join(' ')
+
 const FRONTEND_CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''} https://www.paypal.com https://www.paypalobjects.com https://www.googletagmanager.com`,
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''} https://www.paypal.com https://www.paypalobjects.com ${GOOGLE_SCRIPT_SRC}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "media-src 'self' https:",
   "font-src 'self' data:",
   "frame-src 'self' https://www.google.com https://www.paypal.com https://www.sandbox.paypal.com https://www.googletagmanager.com",
-  "connect-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://googleads.g.doubleclick.net https://td.doubleclick.net",
+  `connect-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com ${GOOGLE_CONNECT_SRC}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https://www.paypal.com",

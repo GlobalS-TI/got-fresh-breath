@@ -5,10 +5,14 @@ import { MediaSlot } from '@/components/MediaSlot'
 import { getPayloadClient } from '@/lib/payload'
 import { imagenPrincipalDeProducto } from '@/lib/producto-imagen'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
+import { metadatosDePagina } from '@/lib/sitio'
 
-export const metadata = {
-  title: 'Tienda - Got Fresh Breath',
-}
+export const metadata = metadatosDePagina({
+  titulo: 'Tienda - Got Fresh Breath',
+  descripcion:
+    'Compra dispensadores de enjuague bucal y consumibles Got Fresh Breath en línea, con envío a todo México.',
+  ruta: '/tienda',
+})
 
 function formatPrecio(precio: number) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(precio)

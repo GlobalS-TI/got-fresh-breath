@@ -1,8 +1,12 @@
 import { LeadForm } from '@/components/LeadForm'
+import { metadatosDePagina } from '@/lib/sitio'
 
-export const metadata = {
-  title: 'Se Distribuidor - Got Fresh Breath',
-}
+export const metadata = metadatosDePagina({
+  titulo: 'Sé Distribuidor - Got Fresh Breath',
+  descripcion:
+    'Conviértete en distribuidor oficial de Got Fresh Breath: dispensadores de enjuague bucal en comodato con ingresos mensuales recurrentes por consumibles y servicio.',
+  ruta: '/distribuidor',
+})
 
 const RESPALDO = [
   'Nosotros blindamos tu operación',

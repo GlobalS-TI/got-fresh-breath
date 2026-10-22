@@ -5,6 +5,7 @@ import { safeRedirectPath } from '@/lib/redirect'
 
 export const metadata = {
   title: 'Iniciar sesión - Got Fresh Breath',
+  robots: { index: false },
 }
 
 export default async function LoginPage({

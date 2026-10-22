@@ -5,12 +5,14 @@ import { SectoresGrid } from '@/components/SectoresGrid'
 import { SolucionesGrid } from '@/components/SolucionesGrid'
 import { VideoPlaceholder } from '@/components/VideoPlaceholder'
 import { getSiteMediaMap } from '@/lib/siteMedia'
+import { metadatosDePagina } from '@/lib/sitio'
 
-export const metadata = {
-  title: 'Sectores - Amenities para Hoteles y Oficinas Corporativas | Got Fresh Breath',
-  description:
+export const metadata = metadatosDePagina({
+  titulo: 'Sectores - Amenities para Hoteles y Oficinas Corporativas | Got Fresh Breath',
+  descripcion:
     'Programa de dispensadores de enjuague bucal en comodato para hoteles, oficinas corporativas, coworking, salud y comercios. Elige tu sector y arma tu propuesta.',
-}
+  ruta: '/sectores',
+})
 
 const SECTOR_VALUES = ['hoteles', 'restaurantes', 'corporativos', 'salud', 'comercial', 'hogar']
 

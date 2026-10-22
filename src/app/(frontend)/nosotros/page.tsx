@@ -1,10 +1,14 @@
 import { ClientesDestacados } from '@/components/ClientesDestacados'
 import { NosotrosHero } from '@/components/NosotrosHero'
 import { ProgramaIntegral } from '@/components/ProgramaIntegral'
+import { metadatosDePagina } from '@/lib/sitio'
 
-export const metadata = {
-  title: 'Nosotros - Got Fresh Breath',
-}
+export const metadata = metadatosDePagina({
+  titulo: 'Nosotros - Got Fresh Breath',
+  descripcion:
+    'Got Fresh Breath equipa la cultura de tu empresa con dispensadores de enjuague bucal en comodato. Distribución oficial en todo México y LATAM con logística y soporte directo.',
+  ruta: '/nosotros',
+})
 
 export default function NosotrosPage() {
   return (

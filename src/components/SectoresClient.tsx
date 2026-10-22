@@ -36,11 +36,11 @@ export function SectoresClient({ sectoresMedia }: SectoresClientProps) {
   return (
     <>
       <div className="text-center">
-        <h2 className="mb-4 text-3xl font-bold text-white">
+        <h1 className="mb-4 text-3xl font-bold text-white">
           Diseñemos el programa
           <br />
           de tu empresa
-        </h2>
+        </h1>
         <button
           type="button"
           onClick={scrollToPicker}

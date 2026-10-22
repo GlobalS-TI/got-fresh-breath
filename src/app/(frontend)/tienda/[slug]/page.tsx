@@ -1,23 +1,42 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { cache } from 'react'
 
 import { AddToCartButtons } from '@/components/AddToCartButtons'
 import { getPayloadClient } from '@/lib/payload'
 import { imagenesDeProducto } from '@/lib/producto-imagen'
+import { metadatosDePagina } from '@/lib/sitio'
 
 function formatPrecio(precio: number) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(precio)
 }
 
-export default async function ProductoPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+// cache(): generateMetadata y la página consultan el mismo producto en un solo request.
+const getProducto = cache(async (slug: string) => {
   const payload = await getPayloadClient()
   const { docs } = await payload.find({
     collection: 'products',
     where: { slug: { equals: slug }, activo: { equals: true } },
     limit: 1,
   })
+  return docs[0] ?? null
+})
 
-  const product = docs[0]
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const product = await getProducto(slug)
+  if (!product) return {}
+
+  return metadatosDePagina({
+    titulo: `${product.nombre} - Got Fresh Breath`,
+    descripcion: product.descripcionCorta || product.descripcion.slice(0, 160),
+    ruta: `/tienda/${product.slug}`,
+  })
+}
+
+export default async function ProductoPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const product = await getProducto(slug)
   if (!product) {
     notFound()
   }
