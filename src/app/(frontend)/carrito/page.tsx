@@ -4,6 +4,7 @@ import { getSession } from '@/lib/session'
 
 export const metadata = {
   title: 'Carrito - Got Fresh Breath',
+  robots: { index: false },
 }
 
 export default async function CarritoPage() {

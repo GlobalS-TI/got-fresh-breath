@@ -79,6 +79,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
               <button
                 type="button"
                 onClick={() => setAccountOpen((open) => !open)}
+                aria-expanded={accountOpen}
                 className="text-sm font-medium hover:text-brand-600"
               >
                 Hola, {user.nombre} ▾
@@ -124,22 +125,24 @@ export function NavbarClient({ user }: NavbarClientProps) {
                 : 'border-white/70 text-white hover:bg-white/10'
             }`}
           >
-            Se Distribuidor
+            Sé Distribuidor
           </Link>
         </div>
 
         <button
           type="button"
-          className={textColor}
-          aria-label="Abrir menú"
+          className={`md:hidden ${textColor}`}
+          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={menuOpen}
+          aria-controls="menu-movil"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          <span className="md:hidden">☰</span>
+          <span aria-hidden>☰</span>
         </button>
       </div>
 
       {menuOpen && (
-        <div className="border-t border-slate-200 bg-white px-6 py-4 text-slate-600 md:hidden">
+        <div id="menu-movil" className="border-t border-slate-200 bg-white px-6 py-4 text-slate-600 md:hidden">
           <nav className="flex flex-col gap-3 text-sm font-medium">
             {NAV_LINKS.map((link) => (
               <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
@@ -173,7 +176,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
               className="rounded-md bg-brand-600 px-4 py-2 text-center font-semibold text-white"
               onClick={() => setMenuOpen(false)}
             >
-              Se Distribuidor
+              Sé Distribuidor
             </Link>
           </nav>
         </div>

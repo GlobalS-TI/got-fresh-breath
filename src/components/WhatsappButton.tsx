@@ -4,6 +4,8 @@ import { useRef, useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { gsap } from 'gsap'
 
+import { WHATSAPP_MENSAJE, whatsappUrl } from '@/lib/sitio'
+
 export default function WhatsAppButton() {
   const buttonRef = useRef<HTMLDivElement>(null)
   const [showTooltip, setShowTooltip] = useState(true)
@@ -32,7 +34,7 @@ export default function WhatsAppButton() {
     >
       {showTooltip && (
         <span className="relative flex items-center gap-2 bg-white text-[#24408d] font-medium pl-4 pr-8 py-2 rounded-md shadow-md text-sm animate-fade-in animate-text-pulse">
-          ¡Dame click para más informes!
+          Solicita información
           <button
             type="button"
             onClick={() => setShowTooltip(false)}
@@ -45,7 +47,7 @@ export default function WhatsAppButton() {
       )}
 
       <a
-        href="https://wa.me/528117810747?text=Estoy%20interesado%20en"
+        href={whatsappUrl(WHATSAPP_MENSAJE)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chatea por WhatsApp"

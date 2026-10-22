@@ -23,6 +23,7 @@ function formatFecha(fecha: string) {
 
 export const metadata = {
   title: 'Mis pedidos - Got Fresh Breath',
+  robots: { index: false },
 }
 
 export default async function PedidosPage() {

@@ -64,14 +64,18 @@ export function ScrollReveal() {
     { scope },
   )
 
+  // Los tres paneles son una sola frase repartida en pantallas: se anuncia como un único h2
+  // (oculto visualmente) y los textos de los paneles quedan como decoración para lectores de pantalla.
   return (
     <section ref={scope} className="relative">
+      <h2 className="sr-only">El trato al cliente no solo se entrena, se equipa.</h2>
       {PANELS.map((panel) => (
         <div
           key={panel.text}
+          aria-hidden
           className={`reveal-panel relative flex h-screen items-center justify-center ${panel.bg}`}
         >
-          <h2 className={panel.textClass}>{panel.text}</h2>
+          <p className={panel.textClass}>{panel.text}</p>
         </div>
       ))}
     </section>

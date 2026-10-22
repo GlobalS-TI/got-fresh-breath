@@ -83,7 +83,7 @@ export function PaypalCheckout({
             })
             if (result.success && result.orderId) {
               onPedidoCreado?.()
-              router.push(`/pedido/${result.orderId}`)
+              router.push(`/pedido/${result.orderId}?nuevo=1`)
             } else {
               setError(result.error ?? 'No se pudo confirmar tu pedido.')
             }

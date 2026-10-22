@@ -5,10 +5,14 @@ import type { Metadata } from 'next'
 import { LeadForm } from '@/components/LeadForm'
 import { VideoPlaceholder } from '@/components/VideoPlaceholder'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
+import { WHATSAPP_MENSAJE, WHATSAPP_TEXTO, metadatosDePagina, whatsappUrl } from '@/lib/sitio'
 
-export const metadata: Metadata = {
-  title: 'Contacto - Got Fresh Breath',
-}
+export const metadata: Metadata = metadatosDePagina({
+  titulo: 'Contacto - Got Fresh Breath',
+  descripcion:
+    'Contacta a Got Fresh Breath: distribución oficial de dispensadores de enjuague bucal en comodato en todo México y LATAM. Atención corporativa en San Nicolás de los Garza, N.L.',
+  ruta: '/contacto',
+})
 
 export default async function ContactoPage() {
   const heroVideo = await getSiteMediaSlot('contacto.hero-agua')
@@ -30,18 +34,26 @@ export default async function ContactoPage() {
           <div className="flex flex-col gap-8 text-white">
             <div>
               <h2 className="mb-2 text-lg font-semibold">Línea Directa Corporativa</h2>
-              <p className="flex items-center gap-2 text-white/90">
+              <a
+                href={whatsappUrl(WHATSAPP_MENSAJE)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-white/90 hover:text-white"
+              >
                 <Phone className="h-4 w-4 shrink-0" />
-                (81) 2204 6127
-              </p>
+                {WHATSAPP_TEXTO}
+              </a>
             </div>
 
             <div>
               <h2 className="mb-2 text-lg font-semibold">Consultoría Institucional:</h2>
-              <p className="flex items-center gap-2 text-white/90">
+              <a
+                href="mailto:contacto@gotfreshbreath.mx"
+                className="flex items-center gap-2 text-white/90 hover:text-white"
+              >
                 <Mail className="h-4 w-4 shrink-0" />
                 contacto@gotfreshbreath.mx
-              </p>
+              </a>
             </div>
 
             <div>

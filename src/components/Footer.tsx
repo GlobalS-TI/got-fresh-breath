@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 import { Logo } from '@/components/Logo'
 import { LogoGlobal } from '@/components/GlobalLogo'
+import { WHATSAPP_MENSAJE, WHATSAPP_TEXTO, whatsappUrl } from '@/lib/sitio'
 
 function FacebookIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -36,11 +37,13 @@ export function Footer() {
 
         <div className="flex flex-col gap-1.5 text-sm text-brand-600 md:items-end">
           <a
-            href="https://wa.me/528122046127"
+            href={whatsappUrl(WHATSAPP_MENSAJE)}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 hover:text-white md:flex-row-reverse"
           >
             <MessageCircle className="h-4 w-4 shrink-0" />
-            (81) 2204 6127
+            {WHATSAPP_TEXTO}
           </a>
           <a
             href="mailto:ventas@gotfreshbreath.mx"

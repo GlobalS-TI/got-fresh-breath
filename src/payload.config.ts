@@ -99,8 +99,9 @@ export default buildConfig({
             token: process.env.BLOB_READ_WRITE_TOKEN,
             // Sube el archivo directo del navegador a Blob, sin pasar por la función
             // serverless — Vercel limita el body de una función a 4.5MB, insuficiente
-            // para videos.
-            clientUploads: true,
+            // para videos. El token de subida solo se entrega a admins (por defecto el plugin
+            // se lo da a cualquier usuario con sesión), igual que `media.access.create`.
+            clientUploads: { access: ({ req }) => req.user?.rol === 'admin' },
           }),
         ]
       : []),

@@ -6,15 +6,17 @@ import { toCheckoutUser } from '@/lib/checkout-user'
 import { getPayloadClient } from '@/lib/payload'
 import { esColor, esPaquete, SLUGS_CONSULTORIOS } from '@/lib/productos-consultorios'
 import { getSession } from '@/lib/session'
+import { metadatosDePagina } from '@/lib/sitio'
 
 import { type ContactoCliente, PedidoForm, type ProductoLanding } from './PedidoForm'
 import styles from './consultorios.module.css'
 
-export const metadata: Metadata = {
-  title: 'Got Fresh Breath para consultorios dentales',
-  description:
+export const metadata: Metadata = metadatosDePagina({
+  titulo: 'Got Fresh Breath para consultorios dentales',
+  descripcion:
     'Dispensador de enjuague bucal sin alcohol para consultorios dentales. Kit de inicio, paquetes de recarga y envío a todo México.',
-}
+  ruta: '/consultorios',
+})
 
 const WHATSAPP_URL = 'https://wa.me/528135798655'
 // La suscripción todavía no se cobra en línea (requiere PayPal Subscriptions) — se atiende por WhatsApp.

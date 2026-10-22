@@ -1,10 +1,13 @@
 import type { ReactNode } from 'react'
 
-export const metadata = {
-  title: 'Aviso de Privacidad - Got Fresh Breath',
-  description:
+import { metadatosDePagina } from '@/lib/sitio'
+
+export const metadata = metadatosDePagina({
+  titulo: 'Aviso de Privacidad - Got Fresh Breath',
+  descripcion:
     'Aviso de Privacidad Integral de Got Fresh Breath México, operado por Global Supplier MTY, S.A. de C.V.',
-}
+  ruta: '/aviso-de-privacidad',
+})
 
 const CORREO_PRIVACIDAD = 'privacidad@globalsupplier.com.mx'
 

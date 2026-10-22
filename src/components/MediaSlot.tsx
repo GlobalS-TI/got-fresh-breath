@@ -1,3 +1,4 @@
+import { VideoDiferido } from '@/components/VideoDiferido'
 import type { Media } from '@/payload-types'
 
 type MediaSlotProps = {
@@ -11,6 +12,9 @@ type MediaSlotProps = {
     loop?: boolean
     muted?: boolean
   }
+  // Videos decorativos fuera del primer pantallazo: se descargan y reproducen solo al acercarse
+  // a la pantalla (ver VideoDiferido). Ignora `videoProps`.
+  diferido?: boolean
 }
 
 const DEFAULT_VIDEO_PROPS = { autoPlay: true, loop: true, muted: true }
@@ -20,9 +24,20 @@ const DEFAULT_VIDEO_PROPS = { autoPlay: true, loop: true, muted: true }
 // renderiza el mismo bloque punteado de "pendiente del cliente" de siempre.
 // Usa <img>/<video> planos (no next/image) para no depender de configurar
 // remotePatterns por cada dominio de storage (local hoy, Vercel Blob en prod).
-export function MediaSlot({ media, fallbackLabel, className, mediaClassName, videoProps }: MediaSlotProps) {
+export function MediaSlot({
+  media,
+  fallbackLabel,
+  className,
+  mediaClassName,
+  videoProps,
+  diferido = false,
+}: MediaSlotProps) {
   if (media?.url) {
     if (media.mimeType?.startsWith('video/')) {
+      if (diferido) {
+        return <VideoDiferido src={media.url} className={mediaClassName} />
+      }
+
       const finalVideoProps = { ...DEFAULT_VIDEO_PROPS, ...videoProps }
       return (
         // eslint-disable-next-line jsx-a11y/media-has-caption

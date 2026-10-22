@@ -7,6 +7,7 @@ import { getSession } from '@/lib/session'
 
 export const metadata = {
   title: 'Mi cuenta - Got Fresh Breath',
+  robots: { index: false },
 }
 
 export default async function CuentaPage() {

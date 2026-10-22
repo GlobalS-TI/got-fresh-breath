@@ -60,7 +60,7 @@ export function CheckoutForm({ user, lineas, redirectPath, onPedidoCreado }: Che
   useEffect(() => {
     if (state.success && state.orderId) {
       onPedidoCreado?.()
-      router.push(`/pedido/${state.orderId}`)
+      router.push(`/pedido/${state.orderId}?nuevo=1`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])

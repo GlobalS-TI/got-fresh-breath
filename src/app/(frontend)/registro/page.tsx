@@ -5,6 +5,7 @@ import { safeRedirectPath } from '@/lib/redirect'
 
 export const metadata = {
   title: 'Crear cuenta - Got Fresh Breath',
+  robots: { index: false },
 }
 
 export default async function RegistroPage({

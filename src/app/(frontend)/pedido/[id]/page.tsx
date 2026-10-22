@@ -1,8 +1,14 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+import { RastreoPedido } from '@/components/RastreoPedido'
 import { getPayloadClient } from '@/lib/payload'
 import { getSession } from '@/lib/session'
+
+export const metadata = {
+  title: 'Tu pedido - Got Fresh Breath',
+  robots: { index: false },
+}
 
 const ESTADO_LABELS: Record<string, string> = {
   pendiente: 'Pendiente de pago',
@@ -28,10 +34,10 @@ export default async function PedidoPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ token?: string }>
+  searchParams: Promise<{ token?: string; nuevo?: string }>
 }) {
   const { id } = await params
-  const { token } = await searchParams
+  const { token, nuevo } = await searchParams
   const orderId = Number(id)
   if (!Number.isFinite(orderId)) {
     notFound()
@@ -63,6 +69,10 @@ export default async function PedidoPage({
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
+      {/* Solo al llegar desde el checkout (no desde "Mis pedidos") cuenta como conversión. */}
+      {nuevo === '1' && (
+        <RastreoPedido orderId={order.id} total={order.total} metodoPago={order.metodoPago ?? 'cotizacion'} />
+      )}
       <h1 className="mb-2 text-3xl font-bold text-slate-900">¡Gracias por tu pedido!</h1>
       <p className="mb-8 text-slate-600">
         Pedido #{order.id} - {ESTADO_LABELS[order.estado] ?? order.estado}

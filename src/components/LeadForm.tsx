@@ -1,9 +1,10 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 
 import { submitLeadAction, type LeadActionState } from '@/actions/leads'
 import { AvisoPrivacidadNotice } from '@/components/AvisoPrivacidadNotice'
+import { trackEvent } from '@/lib/analytics'
 import type { Lead } from '@/payload-types'
 
 const initialState: LeadActionState = { error: '', success: false }
@@ -44,6 +45,12 @@ export function LeadForm({ tipo, sectoresSeleccionados }: LeadFormProps) {
   const [state, formAction, isPending] = useActionState(submitLeadAction, initialState)
   const [colaboradores, setColaboradores] = useState('')
   const [interaccion, setInteraccion] = useState('')
+
+  useEffect(() => {
+    if (state.success) {
+      trackEvent('generate_lead', { tipo_formulario: tipo })
+    }
+  }, [state.success, tipo])
 
   if (state.success) {
     return (

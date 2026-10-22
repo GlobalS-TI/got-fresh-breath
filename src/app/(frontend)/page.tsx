@@ -6,11 +6,32 @@ import { Hero } from '@/components/Hero'
 import { MediaSlot } from '@/components/MediaSlot'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { getSiteMediaSlot } from '@/lib/siteMedia'
+import { SITIO_URL, metadatosDePagina } from '@/lib/sitio'
 
-export const metadata: Metadata = {
-  title: 'Got Fresh Breath | Dispensadores de Enjuague Bucal en Comodato',
-  description:
-    'Servicio todo incluido de dispensadores automáticos de enjuague bucal en comodato para hoteles, oficinas corporativas y coworking. Instalación, mantenimiento y reposición de consumibles sin costo inicial de equipo.',
+const DESCRIPCION =
+  'Servicio todo incluido de dispensadores automáticos de enjuague bucal en comodato para hoteles, oficinas corporativas y coworking. Instalación, mantenimiento y reposición de consumibles sin costo inicial de equipo.'
+
+export const metadata: Metadata = metadatosDePagina({
+  titulo: 'Got Fresh Breath | Dispensadores de Enjuague Bucal en Comodato',
+  descripcion: DESCRIPCION,
+  ruta: '/',
+})
+
+// Datos estructurados del servicio principal. La organización (`#organizacion`) se declara una
+// sola vez en el layout de (frontend).
+const SERVICIO_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Dispensadores de enjuague bucal en comodato',
+  serviceType: 'Comodato de dispensadores de enjuague bucal',
+  description: DESCRIPCION,
+  url: SITIO_URL,
+  provider: { '@id': `${SITIO_URL}/#organizacion` },
+  areaServed: { '@type': 'Country', name: 'México' },
+  audience: {
+    '@type': 'BusinessAudience',
+    audienceType: 'Hoteles, oficinas corporativas y espacios de coworking',
+  },
 }
 
 export default async function HomePage() {
@@ -21,6 +42,11 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICIO_JSON_LD) }}
+      />
+
       <Hero productImage={heroProductImage} />
 
       <ClientsWall />
@@ -43,6 +69,7 @@ export default async function HomePage() {
           media={heroVideo}
           fallbackLabel="Video - el trato al cliente (pendiente del cliente)"
           mediaClassName="absolute inset-0 h-full w-full object-cover"
+          diferido
         />
       </section>
 
