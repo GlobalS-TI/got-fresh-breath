@@ -1,7 +1,7 @@
 import React from 'react'
 
 import type { Metadata } from 'next'
-import { Bricolage_Grotesque, Figtree } from 'next/font/google'
+import localFont from 'next/font/local'
 
 import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/GoogleTagManager'
 import { SITIO_URL } from '@/lib/sitio'
@@ -14,16 +14,18 @@ export const metadata: Metadata = {
 // Root layout para landings de campaña (p. ej. /consultorios): traen su propio header/footer
 // y diseño, así que no usan el Navbar/Footer/Tailwind de (frontend). Las fuentes se sirven
 // desde el propio dominio vía next/font — el CSP del frontend no permite Google Fonts directo.
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  weight: ['600', '800'],
+//
+// Se usan archivos locales (subset latin, fuentes variables descargadas de Google Fonts) en vez de
+// next/font/google: Google a veces responde con URLs sin extensión (/l/font?kit=…) que Turbopack
+// no sabe resolver y tumban el build de forma intermitente (vercel/next.js#99114).
+const bricolage = localFont({
+  src: [{ path: './fonts/BricolageGrotesque-latin.woff2', weight: '600 800', style: 'normal' }],
   variable: '--font-bricolage',
   display: 'swap',
 })
 
-const figtree = Figtree({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+const figtree = localFont({
+  src: [{ path: './fonts/Figtree-latin.woff2', weight: '400 700', style: 'normal' }],
   variable: '--font-figtree',
   display: 'swap',
 })
